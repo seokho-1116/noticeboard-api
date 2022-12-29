@@ -6,6 +6,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+
 @Entity
 @Getter
 public class Post {
@@ -16,15 +19,17 @@ public class Post {
     private Long id;
     private String author;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_id")
+    @OneToMany(fetch = LAZY, cascade = ALL, orphanRemoval = true)
+    @JoinColumn(name = "comment_id")
     private List<Comment> comments;
 
     @Enumerated(value = EnumType.STRING)
     private Category category;
     private String text;
-    private String imageLink;
-    private String videoLink;
+
+    @OneToMany(fetch = LAZY, cascade = ALL, orphanRemoval = true)
+    @JoinColumn(name = "file_id")
+    private List<UploadFile> uploadFiles;
     private LocalDateTime lastModifiedTime;
     private LocalDateTime createdTime;
     private Integer reportCount;
