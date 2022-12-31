@@ -1,5 +1,6 @@
-package com.example.noticeboardapi.entity;
+package com.example.noticeboardapi.post.entity;
 
+import com.example.noticeboardapi.comment.entity.Comment;
 import lombok.Getter;
 
 import javax.persistence.*;

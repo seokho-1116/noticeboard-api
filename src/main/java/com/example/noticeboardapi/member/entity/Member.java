@@ -1,4 +1,4 @@
-package com.example.noticeboardapi.entity;
+package com.example.noticeboardapi.member.entity;
 
 import lombok.Getter;
 
