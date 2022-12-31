@@ -8,13 +8,13 @@ import java.util.List;
 
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
 public class Post {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "post_id")
     private Long id;
     private String author;
@@ -28,8 +28,8 @@ public class Post {
     private String text;
 
     @OneToMany(fetch = LAZY, cascade = ALL, orphanRemoval = true)
-    @JoinColumn(name = "file_id")
-    private List<UploadFile> uploadFiles;
+    @JoinColumn(name = "post_id")
+    private List<PostFile> postFiles;
     private LocalDateTime lastModifiedTime;
     private LocalDateTime createdTime;
     private Integer reportCount;

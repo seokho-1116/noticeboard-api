@@ -2,15 +2,15 @@ package com.example.noticeboardapi.entity;
 
 import lombok.Getter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
 public class Member {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -18,5 +18,8 @@ public class Member {
     private String name;
     private String nickname;
     private String email;
-    private String profile_link;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "profileFile_id")
+    private ProfileFile profileFile;
 }
