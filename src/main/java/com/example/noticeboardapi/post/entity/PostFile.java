@@ -16,4 +16,14 @@ public class PostFile {
     private String fileType;
     private String uploadFileName;
     private String storeFileName;
+
+    public PostFile(String fileType, String uploadFileName, String storeFileName) {
+        this.fileType = fileType;
+        this.uploadFileName = uploadFileName;
+        this.storeFileName = storeFileName;
+    }
+
+    public static PostFile createPostFile(String fileType, String uploadFileName, String storeFileName) {
+        return new PostFile(fileType, uploadFileName, storeFileName);
+    }
 }
