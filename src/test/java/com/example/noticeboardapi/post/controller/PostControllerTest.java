@@ -1,14 +1,22 @@
 package com.example.noticeboardapi.post.controller;
 
+import com.example.noticeboardapi.post.entity.Category;
 import com.example.noticeboardapi.post.service.PostService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -17,13 +25,27 @@ public class PostControllerTest {
     @Autowired
     private MockMvc mvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockBean
     private PostService postService;
 
     @Test
     @DisplayName("글쓰기 요청 테스트")
     void requestWritingPostTest() throws Exception {
-        mvc.perform(post("/post"))
-                .andExpect(status().isCreated());
+        PostFormat postFormat = PostFormat.createPostFormat("seokho", Category.LOL, "hi",
+                "hello","/image.jpg", "/image.jpg");
+
+        given(postService.savePost(any(PostFormat.class))).willReturn(1L);
+        MockHttpServletResponse response = mvc.perform(post("/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postFormat)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse();
+
+        assertEquals("/post/1", response.getHeader("Location"));
     }
+
 }
