@@ -12,6 +12,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
+@Table(name = "POST")
 public class Post {
 
     @Id @GeneratedValue(strategy = IDENTITY)

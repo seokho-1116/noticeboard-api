@@ -10,6 +10,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
+@Table(name = "COMMENT")
 public class Comment {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "comment_id")

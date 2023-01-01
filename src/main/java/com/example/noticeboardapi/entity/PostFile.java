@@ -8,6 +8,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
+@Table(name = "POST_FILE")
 public class PostFile {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "file_id")

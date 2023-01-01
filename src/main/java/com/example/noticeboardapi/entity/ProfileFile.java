@@ -2,15 +2,13 @@ package com.example.noticeboardapi.entity;
 
 import lombok.Getter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
+@Table(name = "PROFILE_FILE")
 public class ProfileFile {
     @Id
     @GeneratedValue(strategy = IDENTITY)
