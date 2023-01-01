@@ -2,6 +2,9 @@ package com.example.noticeboardapi.post.controller;
 
 import com.example.noticeboardapi.post.entity.Category;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,11 +15,10 @@ public class PostFormat {
     private Category category;
     private String title;
     private String text;
-    private String imageLink;
-    private String videoLink;
+    private List<MultipartFile> attachFiles;
 
-    public static PostFormat createPostFormat(String author, Category category, String title,
-                                              String text, String imageLink, String videoLink) {
-        return new PostFormat(author, category, title, text, imageLink, videoLink);
+    public static PostFormat createPostFormat(String author, Category category, String title, String text,
+                                              List<MultipartFile> attachFiles) {
+        return new PostFormat(author, category, title, text, attachFiles);
     }
 }
