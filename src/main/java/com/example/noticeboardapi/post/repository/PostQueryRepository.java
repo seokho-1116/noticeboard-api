@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.jooq.generated.test.tables.Post.POST;
+
 
 @Repository
 @RequiredArgsConstructor
