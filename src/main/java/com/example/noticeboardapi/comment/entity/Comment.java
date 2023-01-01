@@ -6,10 +6,12 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Entity
 @Getter
 public class Comment {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "comment_id")
     private Long id;
 
