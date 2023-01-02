@@ -1,6 +1,7 @@
 package com.example.noticeboardapi.post.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -9,6 +10,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Table(name = "POST_FILE")
+@NoArgsConstructor
 public class PostFile {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "file_id")

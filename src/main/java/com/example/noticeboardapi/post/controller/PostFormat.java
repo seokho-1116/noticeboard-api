@@ -17,8 +17,8 @@ public class PostFormat {
     private String text;
     private List<MultipartFile> attachFiles;
 
-    public static PostFormat createPostFormat(String author, Category category, String title, String text,
-                                              List<MultipartFile> attachFiles) {
+    public static PostFormat createPostFormat(String author, Category category,
+                                              String title, String text, List<MultipartFile> attachFiles) {
         return new PostFormat(author, category, title, text, attachFiles);
     }
 }
