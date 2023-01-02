@@ -4,6 +4,7 @@ import com.example.noticeboardapi.common.FileStore;
 import com.example.noticeboardapi.post.controller.PostFormat;
 import com.example.noticeboardapi.post.entity.Post;
 import com.example.noticeboardapi.post.entity.PostFile;
+import com.example.noticeboardapi.post.repository.PostCommandRepository;
 import com.example.noticeboardapi.post.repository.PostJpaRepository;
 import com.example.noticeboardapi.post.repository.PostQueryRepository;
 import com.example.noticeboardapi.post.service.dto.PostThumbnailDto;
@@ -17,11 +18,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class PostService {
 
     private final PostJpaRepository postJpaRepository;
-    private final PostQueryRepository postQueryRepository;
+    private final PostCommandRepository postCommandRepository;
     private final FileStore fileStore;
 
     public Long savePost(PostFormat postFormat) {
@@ -32,9 +33,7 @@ public class PostService {
         return savedPost.getId();
     }
 
-    public Page<PostThumbnailDto> getPosts(Pageable pageable) {
-        Page<Post> posts = postQueryRepository.find10PostsByPaging(pageable);
-        return posts.map(p -> PostThumbnailDto.createPostThumbnailDto(p.getId(), p.getAuthor(), p.getCategory(),
-                p.getTitle(), p.getText(), p.getPostFiles()));
+    public void addViewCount(Long postNo) {
+        postCommandRepository.updateViewCount(postNo);
     }
 }
