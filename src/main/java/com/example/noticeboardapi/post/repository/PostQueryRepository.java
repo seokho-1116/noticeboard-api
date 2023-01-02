@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
+import static org.jooq.generated.test.tables.Post.POST;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,5 +28,13 @@ public class PostQueryRepository {
         int total = dslContext.fetchCount(POST);
 
         return new PageImpl<>(posts, pageable, total);
+    }
+
+    public Post findPostById(Long pageNo) {
+
+        return dslContext.select(POST.asterisk())
+                .from(POST)
+                .where(POST.POST_ID.eq(pageNo))
+                .fetchOneInto(Post.class);
     }
 }
