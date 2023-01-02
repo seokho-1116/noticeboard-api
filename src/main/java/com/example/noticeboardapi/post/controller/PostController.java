@@ -1,5 +1,6 @@
 package com.example.noticeboardapi.post.controller;
 
+import com.example.noticeboardapi.post.service.PostReadModel;
 import com.example.noticeboardapi.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import java.net.URI;
 public class PostController {
 
     private final PostService postService;
+    private final PostReadModel postReadModel;
 
     @PostMapping("/post")
     private ResponseEntity<?> savePost(@RequestBody PostFormat postFormat) {
@@ -22,7 +24,13 @@ public class PostController {
 
     @GetMapping("/posts")
     private ResponseEntity<?> getPosts(@RequestParam Pageable pageable) {
-        return ResponseEntity.ok(postService.getPosts(pageable));
+        return ResponseEntity.ok(postReadModel.getPosts(pageable));
+    }
+
+    @GetMapping("/posts/{postNo}")
+    private ResponseEntity<?> getPost(@PathVariable Long postNo) {
+        postService.addViewCount(postNo);
+        return ResponseEntity.ok(postReadModel.getPost(postNo));
     }
 }
 
