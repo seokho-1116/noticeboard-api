@@ -1,9 +1,7 @@
 package com.example.noticeboardapi.post.repository;
 
 import com.example.noticeboardapi.post.entity.Post;
-import org.assertj.core.api.Assertions;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.jooq.generated.test.tables.Post.POST;
-import stati org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @JooqTest
 public class PostQueryRepositoryTest {
