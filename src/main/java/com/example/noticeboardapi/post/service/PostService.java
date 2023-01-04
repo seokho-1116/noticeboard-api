@@ -26,10 +26,10 @@ public class PostService {
     private final FileStore fileStore;
 
     public Long savePost(PostFormat postFormat) {
-        List<PostFile> attachFiles = fileStore.storeFiles(postFormat.getAttachFiles());
         Post post = Post.createPostByFormat(postFormat.getAuthor(), postFormat.getCategory(),
-                postFormat.getText(), postFormat.getTitle(), attachFiles);
+                postFormat.getText(), postFormat.getTitle());
         Post savedPost = postJpaRepository.save(post);
+        fileStore.storeFiles(savedPost.getId(),postFormat.getAttachFiles());
         return savedPost.getId();
     }
 

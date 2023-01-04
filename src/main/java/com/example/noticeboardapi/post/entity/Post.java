@@ -14,6 +14,7 @@ import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
+@Table(name = "\"POST\"")
 @Getter
 @NoArgsConstructor
 public class Post {
