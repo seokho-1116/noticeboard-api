@@ -18,4 +18,10 @@ public class PostCommandRepository {
                 .where(POST.POST_ID.eq(postNo))
                 .execute();
     }
+
+    public int deletePost(Long postNo) {
+        return dslContext.delete(POST)
+                .where(POST.POST_ID.eq(postNo))
+                .execute();
+    }
 }
