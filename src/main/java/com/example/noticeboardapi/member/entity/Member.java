@@ -21,8 +21,5 @@ public class Member {
     private String name;
     private String nickname;
     private String email;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "profileFile_id")
-    private ProfileFile profileFile;
+    private Long profileFileId;
 }

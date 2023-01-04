@@ -18,15 +18,8 @@ public class Comment {
 
     private String author;
     private Long postId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private Comment parent;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
-    private List<Comment> child;
-
     private String text;
+    private Long parentCommentId;
     private LocalDateTime lastModifiedTime;
     private LocalDateTime createdTime;
     private Integer reportCount;

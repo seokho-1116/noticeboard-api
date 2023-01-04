@@ -18,6 +18,7 @@ public class PostFile {
     private String fileType;
     private String uploadFileName;
     private String storeFileName;
+    private Long postId;
 
     public PostFile(String fileType, String uploadFileName, String storeFileName) {
         this.fileType = fileType;

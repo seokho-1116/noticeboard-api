@@ -23,18 +23,10 @@ public class Post {
     private Long id;
     private String author;
 
-    @OneToMany(fetch = LAZY, cascade = ALL, orphanRemoval = true)
-    @JoinColumn(name = "comment_id")
-    private List<Comment> comments;
-
     @Enumerated(value = EnumType.STRING)
     private Category category;
     private String title;
     private String text;
-
-    @OneToMany(fetch = LAZY, cascade = ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_id")
-    private List<PostFile> postFiles = new ArrayList<>();
     private LocalDateTime lastModifiedTime;
     private LocalDateTime createdTime;
     private Integer reportCount;
