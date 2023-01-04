@@ -36,4 +36,8 @@ public class PostService {
     public void addViewCount(Long postNo) {
         postCommandRepository.updateViewCount(postNo);
     }
+
+    public void deletePost(Long postNo) {
+        postCommandRepository.deletePost(postNo);
+    }
 }

@@ -4,6 +4,7 @@ import com.example.noticeboardapi.post.service.PostReadModel;
 import com.example.noticeboardapi.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,20 +18,26 @@ public class PostController {
     private final PostReadModel postReadModel;
 
     @PostMapping("/post")
-    private ResponseEntity<?> savePost(@RequestBody PostFormat postFormat) {
+    public ResponseEntity<?> savePost(@RequestBody PostFormat postFormat) {
         Long postNumber = postService.savePost(postFormat);
         return ResponseEntity.created(URI.create("/post/"+postNumber)).build();
     }
 
     @GetMapping("/posts")
-    private ResponseEntity<?> getPosts(@RequestParam Pageable pageable) {
+    public ResponseEntity<?> getPosts(@RequestParam Pageable pageable) {
         return ResponseEntity.ok(postReadModel.getPosts(pageable));
     }
 
     @GetMapping("/posts/{postNo}")
-    private ResponseEntity<?> getPost(@PathVariable Long postNo) {
+    public ResponseEntity<?> getPost(@PathVariable Long postNo) {
         postService.addViewCount(postNo);
         return ResponseEntity.ok(postReadModel.getPost(postNo));
+    }
+
+    @DeleteMapping("/posts/{postNo}")
+    public ResponseEntity<?> deletePost(@PathVariable Long postNo) {
+        postService.deletePost(postNo);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 
