@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class PostDetailDto {
-    private Long postId;
+    private Long id;
 
 
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class PostThumbnailDto {
-    private Long postId;
+    private Long id;
     private String author;
     private Category category;
     private String title;
