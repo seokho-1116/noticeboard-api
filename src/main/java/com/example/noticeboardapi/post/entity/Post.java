@@ -33,15 +33,15 @@ public class Post {
     private Integer viewCount;
     private Integer recommendationCount;
 
-    public Post(String author, Category category, String title, String text, List<PostFile> postFiles) {
+    public Post(String author, Category category, String title, String text) {
         this.author = author;
         this.category = category;
+        this.title = title;
         this.text = text;
-        this.postFiles.addAll(postFiles);
     }
 
     public static Post createPostByFormat(String author, Category category, String title,
-                                          String text, List<PostFile> postFiles) {
-        return new Post(author, category, title, text, postFiles);
+                                          String text) {
+        return new Post(author, category, title, text);
     }
 }
