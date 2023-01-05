@@ -5,6 +5,7 @@ import com.example.noticeboardapi.post.controller.PostFormat;
 import com.example.noticeboardapi.post.entity.Post;
 import com.example.noticeboardapi.post.entity.PostFile;
 import com.example.noticeboardapi.post.repository.PostCommandRepository;
+import com.example.noticeboardapi.post.repository.PostFileJpaRepository;
 import com.example.noticeboardapi.post.repository.PostJpaRepository;
 import com.example.noticeboardapi.post.repository.PostQueryRepository;
 import com.example.noticeboardapi.post.service.dto.PostThumbnailDto;
@@ -23,13 +24,15 @@ public class PostService {
 
     private final PostJpaRepository postJpaRepository;
     private final PostCommandRepository postCommandRepository;
+    private final PostFileJpaRepository postFileJpaRepository;
     private final FileStore fileStore;
 
     public Long savePost(PostFormat postFormat) {
         Post post = Post.createPostByFormat(postFormat.getAuthor(), postFormat.getCategory(),
                 postFormat.getText(), postFormat.getTitle());
         Post savedPost = postJpaRepository.save(post);
-        fileStore.storeFiles(savedPost.getId(),postFormat.getAttachFiles());
+        List<PostFile> postFiles = fileStore.storeFiles(savedPost.getId(), postFormat.getAttachFiles());
+        postFileJpaRepository.saveAll(postFiles);
         return savedPost.getId();
     }
 

@@ -4,6 +4,7 @@ import com.example.noticeboardapi.post.service.PostReadModel;
 import com.example.noticeboardapi.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<?> getPosts(@RequestParam Pageable pageable) {
+    public ResponseEntity<?> getPosts(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(postReadModel.getPosts(pageable));
     }
 

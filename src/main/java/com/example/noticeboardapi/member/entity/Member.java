@@ -9,8 +9,8 @@ import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Getter
 @Table(name = "MEMBER")
+@Getter
 public class Member {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "member_id")
@@ -18,8 +18,13 @@ public class Member {
 
     @Enumerated(value = STRING)
     private Role role;
+
     private String name;
+
     private String nickname;
+
     private String email;
+
+    @Column(name = "profile_file_id")
     private Long profileFileId;
 }
