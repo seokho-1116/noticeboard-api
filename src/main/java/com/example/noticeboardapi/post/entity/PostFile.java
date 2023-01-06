@@ -10,27 +10,30 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "POST_FILE")
 @NoArgsConstructor
 public class PostFile {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "file_id")
     private Long id;
-    private String fileType;
-    private String uploadFileName;
-    private String storeFileName;
-    private Long postId;
 
-    public PostFile(Long postId, String fileType, String uploadFileName, String storeFileName) {
-        this.postId = postId;
+    @Column(name = "file_type")
+    private String fileType;
+
+    @Column(name = "upload_file_name")
+    private String uploadFileName;
+
+    @Column(name = "store_file_name")
+    private String storeFileName;
+
+    public PostFile(String fileType, String uploadFileName, String storeFileName) {
         this.fileType = fileType;
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
     }
 
 
-    public static PostFile createPostFile(Long postId, String fileType, String uploadFileName, String storeFileName) {
-        return new PostFile(postId, fileType, uploadFileName, storeFileName);
+    public static PostFile createPostFile(String fileType, String uploadFileName, String storeFileName) {
+        return new PostFile(fileType, uploadFileName, storeFileName);
     }
 }

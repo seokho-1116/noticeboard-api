@@ -5,6 +5,4 @@ import lombok.Getter;
 @Getter
 public class PostDetailDto {
     private Long id;
-
-
 }
