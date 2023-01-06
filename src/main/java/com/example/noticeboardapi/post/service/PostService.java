@@ -28,16 +28,19 @@ public class PostService {
     private final FileStore fileStore;
 
     public Long savePost(PostFormat postFormat) {
+        List<PostFile> postFiles = fileStore.storeFiles(postFormat.getAttachFiles());
         Post post = Post.createPostByFormat(postFormat.getAuthor(), postFormat.getCategory(),
-                postFormat.getText(), postFormat.getTitle());
+                postFormat.getText(), postFormat.getTitle(), postFiles);
         Post savedPost = postJpaRepository.save(post);
-        List<PostFile> postFiles = fileStore.storeFiles(savedPost.getId(), postFormat.getAttachFiles());
-        postFileJpaRepository.saveAll(postFiles);
         return savedPost.getId();
     }
 
     public void addViewCount(Long postNo) {
         postCommandRepository.updateViewCount(postNo);
+    }
+
+    public void addRecommendationCount(Long postNo) {
+        postCommandRepository.updateRecommendationCount(postNo);
     }
 
     public void deletePost(Long postNo) {
