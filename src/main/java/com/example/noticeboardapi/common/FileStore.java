@@ -24,18 +24,18 @@ public class FileStore {
         return fileDir + filename;
     }
 
-    public List<PostFile> storeFiles(Long postId, List<MultipartFile> multipartFiles) {
+    public List<PostFile> storeFiles(List<MultipartFile> multipartFiles) {
         List<PostFile> storeFileResult = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
-                storeFileResult.add(storeFile(postId, multipartFile));
+                storeFileResult.add(storeFile(multipartFile));
             }
         }
         return storeFileResult;
     }
 
-    public PostFile storeFile(Long postId, MultipartFile multipartFile) {
+    public PostFile storeFile(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
             return null;
         }
@@ -49,7 +49,7 @@ public class FileStore {
             throw new RuntimeException(e);
         }
 
-        return PostFile.createPostFile(postId, extractExt(originalFilename), originalFilename, storeFileName);
+        return PostFile.createPostFile(extractExt(originalFilename), originalFilename, storeFileName);
     }
 
     private String createStoreFileName(String originalFilename) {

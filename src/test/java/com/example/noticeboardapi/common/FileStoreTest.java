@@ -23,7 +23,7 @@ class FileStoreTest {
             multipartFiles.add(new MockMultipartFile("image" + i + ".jpg", "image" + i + ".jpg",
                     "jpg", new byte[100]));
         }
-        List<PostFile> postFiles = fileStore.storeFiles(1L, multipartFiles);
+        List<PostFile> postFiles = fileStore.storeFiles(multipartFiles);
 
         assertThat(postFiles).extracting(PostFile::getUploadFileName).allMatch(n -> n.matches("image[0-9]+.jpg"));
         assertThat(postFiles).extracting(PostFile::getFileType).allMatch(n -> n.equals("jpg"));
