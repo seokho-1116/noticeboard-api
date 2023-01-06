@@ -40,5 +40,11 @@ public class PostController {
         postService.deletePost(postNo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/posts/{postNo}/recommend")
+    public ResponseEntity<?> recommendPost(@PathVariable Long postNo) {
+        postService.addRecommendationCount(postNo);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
 
