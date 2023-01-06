@@ -57,6 +57,10 @@ public class Post {
     @Column(name = "post_files")
     private List<PostFile> postFiles = new ArrayList<>();
 
+    @OneToMany(fetch = LAZY, cascade = ALL, orphanRemoval = true)
+    @JoinColumn(name = "comment_id")
+    private List<Comment> comments;
+
     public Post(String author, Category category, String title, String text, List<PostFile> postFiles) {
         this.author = author;
         this.category = category;

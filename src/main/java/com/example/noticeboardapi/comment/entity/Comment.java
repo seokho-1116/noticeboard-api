@@ -16,11 +16,18 @@ public class Comment {
     @Column(name = "comment_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent")
+    private Comment parent;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
+    @Column(name = "child")
+    private List<Comment> child;
+
+    @Column(name = "author")
     private String author;
 
-    @Column(name = "post_id")
-    private Long postId;
-
+    @Column(name = "text")
     private String text;
 
     @Column(name = "parent_comment_id")
