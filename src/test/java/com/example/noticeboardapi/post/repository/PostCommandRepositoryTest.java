@@ -1,9 +1,11 @@
 package com.example.noticeboardapi.post.repository;
 
+import com.example.noticeboardapi.comment.entity.Comment;
 import com.example.noticeboardapi.post.entity.Post;
+import com.example.noticeboardapi.post.entity.PostFile;
 import org.jooq.DSLContext;
-import org.jooq.generated.test.tables.Comment;
-import org.jooq.generated.test.tables.PostFile;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jooq.generated.test.tables.Comment.COMMENT;
 import static org.jooq.generated.test.tables.Post.POST;
 import static org.jooq.generated.test.tables.PostFile.POST_FILE;
-import static org.junit.jupiter.api.Assertions.*;
 
 @JooqTest
 class PostCommandRepositoryTest {
@@ -25,28 +26,30 @@ class PostCommandRepositoryTest {
 
     @ParameterizedTest
     @ValueSource(longs = {1L})
-    void updateViewCount(Long postNo) {
-        int beforeViewCount = getExecute(postNo);
+    @DisplayName("게시물 조회수 1 추가 테스트")
+    void updateViewCountTest(Long postNo) {
+        Post before = getExecute(postNo);
 
         dslContext.update(POST)
                 .set(POST.VIEW_COUNT, POST.VIEW_COUNT.plus(1))
                 .where(POST.POST_ID.eq(postNo))
                 .execute();
 
-        int afterViewCount = getExecute(postNo);
-        assertThat(afterViewCount - beforeViewCount).isEqualTo(1);
+        Post after = getExecute(postNo);
+        assertThat(after.getViewCount() - before.getViewCount()).isEqualTo(1);
     }
 
-    private Integer getExecute(Long postNo) {
-        return dslContext.select(POST.VIEW_COUNT)
+    private Post getExecute(Long postNo) {
+        return dslContext.select()
                 .from(POST)
                 .where(POST.POST_ID.eq(postNo))
-                .fetchOne().into(Integer.class);
+                .fetchOneInto(Post.class);
     }
 
     @ParameterizedTest
     @ValueSource(longs = {1L})
-    void deletePost(Long postNo) {
+    @DisplayName("게시물 삭제 테스트")
+    void deletePostTest(Long postNo) {
         dslContext.delete(POST_FILE)
                 .where(POST_FILE.POST_ID.eq(postNo))
                 .execute();
@@ -60,7 +63,31 @@ class PostCommandRepositoryTest {
         Optional<Post> post = dslContext.selectFrom(POST)
                 .where(POST.POST_ID.eq(postNo))
                 .fetchOptionalInto(Post.class);
+        Optional<PostFile> postFile = dslContext.selectFrom(POST_FILE)
+                .where(POST_FILE.POST_ID.eq(postNo))
+                .fetchOptionalInto(PostFile.class);
+        Optional<Comment> comment = dslContext.selectFrom(COMMENT)
+                .where(COMMENT.POST_ID.eq(postNo))
+                .fetchOptionalInto(Comment.class);
+
 
         assertThat(post.isEmpty()).isTrue();
+        assertThat(postFile.isEmpty()).isTrue();
+        assertThat(comment.isEmpty()).isTrue();
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {1L})
+    @DisplayName("게시물 추천 테스트")
+    void updateRecommendationCountTest(Long postNo) {
+        Post before = getExecute(postNo);
+
+        dslContext.update(POST)
+                .set(POST.RECOMMENDATION_COUNT, POST.RECOMMENDATION_COUNT.plus(1))
+                .where(POST.POST_ID.eq(postNo))
+                .execute();
+
+        Post after = getExecute(postNo);
+        assertThat(after.getRecommendationCount() - before.getRecommendationCount()).isEqualTo(1);
     }
 }

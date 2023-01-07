@@ -17,7 +17,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name = "POST")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Post {
 
@@ -25,13 +24,17 @@ public class Post {
     @Column(name = "post_id")
     private Long id;
 
+    @Column(name = "author")
     private String author;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "category")
     private Category category;
 
+    @Column(name = "title")
     private String title;
 
+    @Column(name = "text")
     private String text;
 
     @Column(name = "last_modified_time")
@@ -51,17 +54,19 @@ public class Post {
 
     @OneToMany(fetch = LAZY, cascade = ALL, orphanRemoval = true)
     @JoinColumn(name = "post_id")
+    @Column(name = "post_files")
     private List<PostFile> postFiles = new ArrayList<>();
 
-    public Post(String author, Category category, String title, String text) {
+    public Post(String author, Category category, String title, String text, List<PostFile> postFiles) {
         this.author = author;
         this.category = category;
         this.title = title;
         this.text = text;
+        this.postFiles = postFiles;
     }
 
     public static Post createPostByFormat(String author, Category category, String title,
-                                          String text) {
-        return new Post(author, category, title, text);
+                                          String text, List<PostFile> postFiles) {
+        return new Post(author, category, title, text, postFiles);
     }
 }

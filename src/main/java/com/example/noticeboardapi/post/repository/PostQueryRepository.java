@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static org.jooq.generated.test.tables.Post.POST;
+import static org.jooq.generated.test.tables.PostFile.POST_FILE;
+import static org.jooq.impl.DSL.multisetAgg;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,9 +21,19 @@ public class PostQueryRepository {
     private final DSLContext dslContext;
 
     public Page<Post> find10PostsByPaging(Pageable pageable) {
-        List<Post> posts = dslContext.select(POST.POST_ID, POST.AUTHOR, POST.CATEGORY, POST.CREATED_TIME, POST.RECOMMENDATION_COUNT)
+        List<Post> posts = dslContext
+                .select(POST.POST_ID, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
+                        multisetAgg(
+                                POST_FILE.FILE_ID,
+                                POST_FILE.FILE_TYPE,
+                                POST_FILE.STORE_FILE_NAME,
+                                POST_FILE.UPLOAD_FILE_NAME
+                        ).as("postFiles"))
                 .from(POST)
-                .where(POST.POST_ID.gt(pageable.getOffset()))
+                .join(POST_FILE)
+                .on(POST.POST_ID.eq(POST_FILE.POST_ID))
+                .groupBy(POST.POST_ID)
+                .having(POST.POST_ID.gt(pageable.getOffset()))
                 .limit(pageable.getPageSize())
                 .fetchInto(Post.class);
 
@@ -31,7 +43,6 @@ public class PostQueryRepository {
     }
 
     public Post findPostById(Long pageNo) {
-
         return dslContext.select(POST.asterisk())
                 .from(POST)
                 .where(POST.POST_ID.eq(pageNo))
