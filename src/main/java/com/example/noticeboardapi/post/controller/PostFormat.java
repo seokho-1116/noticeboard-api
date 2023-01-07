@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class PostFormat {
     private String author;
@@ -16,6 +15,14 @@ public class PostFormat {
     private String title;
     private String text;
     private List<MultipartFile> attachFiles;
+
+    public PostFormat(String author, Category category, String title, String text, List<MultipartFile> attachFiles) {
+        this.author = author;
+        this.category = category;
+        this.title = title;
+        this.text = text;
+        this.attachFiles = attachFiles;
+    }
 
     public static PostFormat createPostFormat(String author, Category category,
                                               String title, String text, List<MultipartFile> attachFiles) {
