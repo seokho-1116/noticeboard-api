@@ -49,7 +49,7 @@ public class FileStore {
             throw new RuntimeException(e);
         }
 
-        return PostFile.createPostFile(postId, extractExt(originalFilename), originalFilename, storeFileName);
+        return PostFile.createPostFile(extractExt(originalFilename), originalFilename, storeFileName);
     }
 
     private String createStoreFileName(String originalFilename) {

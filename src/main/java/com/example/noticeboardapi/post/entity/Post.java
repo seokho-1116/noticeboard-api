@@ -49,6 +49,10 @@ public class Post {
     @Column(name = "recommendation_count")
     private Integer recommendationCount;
 
+    @OneToMany(fetch = LAZY, cascade = ALL, orphanRemoval = true)
+    @JoinColumn(name = "post_id")
+    private List<PostFile> postFiles = new ArrayList<>();
+
     public Post(String author, Category category, String title, String text) {
         this.author = author;
         this.category = category;

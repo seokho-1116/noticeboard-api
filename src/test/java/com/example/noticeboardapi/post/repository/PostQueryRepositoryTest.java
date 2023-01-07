@@ -1,10 +1,11 @@
 package com.example.noticeboardapi.post.repository;
 
+import com.example.noticeboardapi.post.entity.Category;
 import com.example.noticeboardapi.post.entity.Post;
 import com.example.noticeboardapi.post.entity.PostFile;
 import com.example.noticeboardapi.post.service.dto.PostThumbnailDto;
-import org.jooq.DSLContext;
-import org.jooq.Records;
+import org.jooq.*;
+import org.jooq.impl.DSL;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,13 +66,17 @@ public class PostQueryRepositoryTest {
     void request10Posts() {
 
         Pageable pageable = PageRequest.of(0, 10);
+        Field<Long> pid = POST.POST_ID.as("pid");
+        Field<Long> pfid = POST_FILE.POST_ID.as("pfid");
 
         List<PostThumbnailDto> postThumbnailDtos = dslContext
-                .select(POST.POST_ID, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
+                .select(pid, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
                 multiset(
-                        select(POST_FILE.FILE_ID)
+                        (select(POST_FILE.FILE_ID)
                                 .from(POST_FILE)
-                                .where(POST_FILE.POST_ID.eq(POST.POST_ID))
+                                .join(POST)
+                                .on(pfid.eq(POST.POST_ID))
+                        ).where(pid.eq(pfid))
                 ).as("postFiles"))
                 .from(POST)
                 .where(POST.POST_ID.gt(pageable.getOffset()))
@@ -87,20 +93,88 @@ public class PostQueryRepositoryTest {
     @Test
     void request10Posts2() {
 
+        record PostFile(Long id, String fileType, String uploadFileName, String storeFileName, Long postId) {}
+        record Post(Long id, String author, String title, LocalDateTime created_time, String category, Integer recommendationCount, List<PostFile> postFiles) {}
         Pageable pageable = PageRequest.of(0, 10);
+        Field<Long> pid = POST.POST_ID.as("pid");
+        Field<Long> pfid = POST_FILE.POST_ID.as("pfid");
 
-        List<PostThumbnailDto> postThumbnailDtos = dslContext
-                .select(POST.POST_ID, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
-                field(select(jsonArrayAgg(jsonObject(POST_FILE.FILE_ID, POST_FILE.FILE_TYPE, POST_FILE.STORE_FILE_NAME, POST_FILE.UPLOAD_FILE_NAME)))
-                        .from(POST_FILE).join(POST).on(POST.POST_ID.eq(POST_FILE.POST_ID))).as("postFiles"))
+
+        List<Post> postThumbnailDtos = dslContext
+                .select(pid, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
+                multiset(
+                        select(pfid, POST_FILE.FILE_TYPE, POST_FILE.UPLOAD_FILE_NAME, POST_FILE.STORE_FILE_NAME, POST_FILE.POST_ID)
+                                .from(POST_FILE)
+                                .join(POST)
+                                .on(pfid.eq(POST.POST_ID))
+                                .where()
+                ).as("postFiles").convertFrom(r -> r.map(Records.mapping(PostFile::new))))
                 .from(POST)
                 .where(POST.POST_ID.gt(pageable.getOffset()))
                 .limit(pageable.getPageSize())
-                .fetchInto(PostThumbnailDto.class);
+                .fetch(Records.mapping(Post::new));
 
         int total = dslContext.fetchCount(POST);
 
-        Page<PostThumbnailDto> result = new PageImpl<>(postThumbnailDtos, pageable, total);
+        Page<Post> result = new PageImpl<>(postThumbnailDtos, pageable, total);
+
+        assertThat(result.getNumberOfElements()).isEqualTo(10);
+    }
+
+    @Test
+    void request10Posts3() {
+
+        record PostFile(Long id, String fileType, String uploadFileName, String storeFileName, Long postId) {}
+        record Post(Long id, String author, String title, LocalDateTime created_time, String category, Integer recommendationCount, List<PostFile> postFiles) {}
+        Pageable pageable = PageRequest.of(0, 10);
+        Field<Long> pid = POST.POST_ID.as("pid");
+        Field<Long> pfid = POST_FILE.POST_ID.as("pfid");
+
+        List<Post> postThumbnailDtos = dslContext
+                .select(pid, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
+                        multiset(
+                                select(pfid, POST_FILE.FILE_TYPE, POST_FILE.UPLOAD_FILE_NAME, POST_FILE.STORE_FILE_NAME, POST_FILE.POST_ID)
+                                        .from(POST_FILE)
+                                        .join(POST)
+                                        .on(POST_FILE.POST_ID.eq(POST.POST_ID))
+                        ).convertFrom(r -> r.map(Records.mapping(PostFile::new))))
+                .from(POST)
+                .where(pid.gt(pageable.getOffset()))
+                .limit(pageable.getPageSize())
+                .fetch(Records.mapping(Post::new));
+
+        int total = dslContext.fetchCount(POST);
+
+        Page<Post> result = new PageImpl<>(postThumbnailDtos, pageable, total);
+
+        assertThat(result.getNumberOfElements()).isEqualTo(10);
+    }
+
+    @Test
+    void request10Posts4() {
+
+        record PostFile(Long id, String fileType, String uploadFileName, String storeFileName, Long postId) {}
+        record Post(Long id, String author, String title, LocalDateTime created_time, String category, Integer recommendationCount, List<PostFile> postFiles) {}
+        Pageable pageable = PageRequest.of(0, 10);
+        Field<Long> pid = POST.POST_ID.as("pid");
+        Field<Long> pfid = POST_FILE.POST_ID.as("pfid");
+
+        List<Post> postThumbnailDtos = dslContext
+                .select(POST.POST_ID, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
+                        multisetAgg(
+                                POST_FILE.FILE_ID, POST_FILE.FILE_TYPE, POST_FILE.UPLOAD_FILE_NAME, POST_FILE.STORE_FILE_NAME, POST_FILE.POST_ID
+                        ).as("postFiles").convertFrom(r -> r.map(Records.mapping(PostFile::new))))
+                .from(POST)
+                .join(POST_FILE)
+                .on(POST.POST_ID.eq(POST_FILE.POST_ID))
+                .groupBy(POST.POST_ID)
+                .having(POST.POST_ID.gt(pageable.getOffset()))
+                .limit(pageable.getPageSize())
+                .fetch(Records.mapping(Post::new));
+
+        int total = dslContext.fetchCount(POST);
+
+        Page<Post> result = new PageImpl<>(postThumbnailDtos, pageable, total);
 
         assertThat(result.getNumberOfElements()).isEqualTo(10);
     }
