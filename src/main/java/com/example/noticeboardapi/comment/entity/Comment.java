@@ -1,21 +1,28 @@
 package com.example.noticeboardapi.comment.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "COMMENT")
 @Getter
-public class Comment {
+@NoArgsConstructor
+public class Comment implements Serializable {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "comment_id")
     private Long id;
+
+    @Column(name = "post_id")
+    private Long postId;
 
     @Column(name = "author")
     private String author;
@@ -24,7 +31,7 @@ public class Comment {
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent")
+    @JoinColumn(name = "parent_id")
     private Comment parent;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
@@ -43,7 +50,14 @@ public class Comment {
     @Column(name = "recommendation_count")
     private Integer recommendationCount;
 
-    public static Comment createCommentByFormat(String author, String text, LocalDateTime createdTime) {
-        return new Comment(author, text, createdTime);
+    public Comment(Long postId, String author, String text, LocalDateTime createdTime) {
+        this.postId = postId;
+        this.author = author;
+        this.text = text;
+        this.createdTime = createdTime;
+    }
+
+    public static Comment createCommentByFormat(Long postId, String author, String text, LocalDateTime createdTime) {
+        return new Comment(postId, author, text, createdTime);
     }
 }
