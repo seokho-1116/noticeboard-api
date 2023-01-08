@@ -1,25 +1,32 @@
 package com.example.noticeboardapi.comment.controller;
 
-import com.example.noticeboardapi.comment.repository.CommentJpaRepository;
+import com.example.noticeboardapi.comment.service.CommentReadModel;
 import com.example.noticeboardapi.comment.service.CommentService;
 import com.example.noticeboardapi.comment.service.dto.CommentDto;
-import com.example.noticeboardapi.post.repository.PostJpaRepository;
-import com.example.noticeboardapi.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
-    private final CommentJpaRepository commentJpaRepository;
+    private final CommentReadModel commentReadModel;
 
     @PostMapping("/posts/{postNo}/comments")
-    public ResponseEntity<?> savePost(Long postNo, CommentFormat commentFormat) {
+    public ResponseEntity<?> saveComment(@PathVariable Long postNo, @RequestBody CommentFormat commentFormat) {
         CommentDto commentDto = commentService.saveComment(postNo, commentFormat);
-        return ResponseEntity.ok(commentDto);
+        return ResponseEntity.created(URI.create("/posts/"+postNo+"/comments")).body(commentDto);
+    }
+
+    @GetMapping("/posts/{postNo}/comments")
+    public ResponseEntity<?> getComments(@PathVariable Long postNo, @PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(commentReadModel.getComments(postNo, pageable));
     }
 }

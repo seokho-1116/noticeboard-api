@@ -10,5 +10,5 @@ create table POST (post_id bigint not null auto_increment, author varchar(30), t
 create table POST_FILE (file_id bigint not null auto_increment, file_type varchar(50), store_file_name varchar(50), upload_file_name varchar(50), post_id bigint, primary key (file_id)) engine=InnoDB;
 create table PROFILE_FILE (file_id bigint not null auto_increment, store_file_name varchar(50), primary key (file_id)) engine=InnoDB;
 
-alter table COMMENT add constraint FK_COMMENT_COMMENT foreign key (parent_id) references comment (comment_id);
-alter table POST_FILE add constraint FK_POST_POST_FILE foreign key (post_id) references post (post_id);
+alter table COMMENT add constraint FK_COMMENT_COMMENT foreign key (parent_id) references COMMENT (comment_id);
+alter table POST_FILE add constraint FK_POST_FILE_POST foreign key (post_id) references POST (post_id);
