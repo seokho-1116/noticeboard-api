@@ -1,9 +1,7 @@
 package com.example.noticeboardapi.post.entity;
 
-import com.example.noticeboardapi.comment.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -1,14 +1,10 @@
 package com.example.noticeboardapi.comment.repository;
 
 import com.example.noticeboardapi.comment.entity.Comment;
-import com.sun.source.tree.Tree;
-import org.assertj.core.api.Assertions;
 import org.jooq.DSLContext;
-import org.jooq.Field;
 import org.jooq.generated.test.tables.TreePath;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +15,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jooq.generated.test.tables.Comment.COMMENT;
-import static org.jooq.generated.test.tables.TreePath.TREE_PATH;
 import static org.jooq.impl.DSL.*;
 
 @JooqTest

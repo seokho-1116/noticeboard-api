@@ -7,11 +7,7 @@ import com.example.noticeboardapi.post.entity.PostFile;
 import com.example.noticeboardapi.post.repository.PostCommandRepository;
 import com.example.noticeboardapi.post.repository.PostFileJpaRepository;
 import com.example.noticeboardapi.post.repository.PostJpaRepository;
-import com.example.noticeboardapi.post.repository.PostQueryRepository;
-import com.example.noticeboardapi.post.service.dto.PostThumbnailDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

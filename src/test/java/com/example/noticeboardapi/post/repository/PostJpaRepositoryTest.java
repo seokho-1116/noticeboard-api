@@ -3,7 +3,6 @@ package com.example.noticeboardapi.post.repository;
 import com.example.noticeboardapi.post.entity.Category;
 import com.example.noticeboardapi.post.entity.Post;
 import com.example.noticeboardapi.post.entity.PostFile;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

@@ -5,7 +5,6 @@ import com.example.noticeboardapi.post.entity.Post;
 import com.example.noticeboardapi.post.entity.PostFile;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;

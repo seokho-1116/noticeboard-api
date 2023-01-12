@@ -3,7 +3,6 @@ package com.example.noticeboardapi.post.repository;
 import com.example.noticeboardapi.post.entity.Post;
 import com.example.noticeboardapi.post.entity.PostFile;
 import org.jooq.DSLContext;
-import org.jooq.generated.test.tables.Comment;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.jooq.generated.test.tables.Comment.COMMENT;
 import static org.jooq.generated.test.tables.Post.POST;
 import static org.jooq.generated.test.tables.PostFile.POST_FILE;
 import static org.jooq.impl.DSL.*;
