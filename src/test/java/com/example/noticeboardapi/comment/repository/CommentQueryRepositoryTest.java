@@ -2,6 +2,7 @@ package com.example.noticeboardapi.comment.repository;
 
 import com.example.noticeboardapi.comment.entity.Comment;
 import com.sun.source.tree.Tree;
+import org.assertj.core.api.Assertions;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.generated.test.tables.TreePath;
@@ -21,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.jooq.generated.test.tables.Comment.COMMENT;
 import static org.jooq.generated.test.tables.TreePath.TREE_PATH;
 import static org.jooq.impl.DSL.*;
@@ -33,33 +35,11 @@ public class CommentQueryRepositoryTest {
     private DSLContext dslContext;
 
     @ParameterizedTest
-    @ValueSource(longs = {1L}, ints = {9, 20})
+    @ValueSource(longs = {1L})
     @DisplayName("특정 게시글 하위에 있는 댓글 20개 페이징")
-    void request20CommentUnderSpecificPostTest(Long postNo, int[] pageRequest) {
-        Pageable pageable = PageRequest.of(pageRequest[0], pageRequest[1]);
+    void request20CommentUnderSpecificPostTest(Long postNo) {
+        Pageable pageable = PageRequest.of(0, 20);
 
-        List<Comment> comments = dslContext
-                .select(COMMENT.COMMENT_ID, COMMENT.TEXT, COMMENT.CREATED_TIME,
-                        coalesce(COMMENT.PARENT_ID, COMMENT.COMMENT_ID).as("parent_id"))
-                .from(COMMENT)
-                .orderBy(DSL.field("parent_id"), COMMENT.COMMENT_ID)
-                .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
-                .fetchInto(Comment.class);
-
-        int count = dslContext.fetchCount(COMMENT, COMMENT.POST_ID.eq(postNo));
-
-        Page<Comment> page = new PageImpl<>(comments, pageable, count);
-        for (Comment comment : comments) {
-            System.out.println("comment.getId() = " + comment.getId());
-            System.out.println("comment.getCreatedTime() = " + comment.getCreatedTime());
-            System.out.println("comment.getParent() = " + comment.getParentId());
-        }
-    }
-
-    @Test
-    void name() {
-        Long postNo = 1L;
         org.jooq.generated.test.tables.Comment c1 = new org.jooq.generated.test.tables.Comment("c1");
         org.jooq.generated.test.tables.Comment c2 = new org.jooq.generated.test.tables.Comment("c2");
         TreePath cc1 = new TreePath("cc1");
@@ -80,11 +60,15 @@ public class CommentQueryRepositoryTest {
                 .where(c1.PARENT_ID.isNull())
                 .groupBy(cc1.DESCENDANT)
                 .orderBy(DSL.field("breadcrumbs"))
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
                 .fetchInto(Comment.class);
 
-        for (Comment comment : comments) {
-            System.out.println("comment.getId() = " + comment.getId());
-            System.out.println("comment.getAuthor() = " + comment.getAuthor());
-        }
+        int count = dslContext.fetchCount(COMMENT, COMMENT.POST_ID.eq(postNo));
+
+        Page<Comment> page = new PageImpl<>(comments, pageable, count);
+        Long[] orders = {1L, 20L, 1001L, 1002L, 32L, 2L, 16L, 24L};
+        assertThat(page.getNumberOfElements()).isEqualTo(8);
+        assertThat(page.getContent().stream().map(Comment::getId)).containsExactly(orders);
     }
 }
