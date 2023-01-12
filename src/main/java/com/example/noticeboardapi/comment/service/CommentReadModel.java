@@ -18,7 +18,7 @@ public class CommentReadModel {
     private final CommentQueryRepository commentQueryRepository;
     private final CommentMapper commentMapper = CommentMapper.INSTANCE;
 
-    public Page<CommentDto> getComments(Long postNo, Pageable pageable) {
+    public Page<CommentDto> get20Comments(Long postNo, Pageable pageable) {
         Page<Comment> comments = commentQueryRepository.find20CommentsByPaging(postNo, pageable);
         return comments.map(commentMapper::fromComment);
     }

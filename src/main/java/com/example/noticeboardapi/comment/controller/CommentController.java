@@ -27,6 +27,6 @@ public class CommentController {
 
     @GetMapping("/posts/{postNo}/comments")
     public ResponseEntity<?> getComments(@PathVariable Long postNo, @PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(commentReadModel.getComments(postNo, pageable));
+        return ResponseEntity.ok(commentReadModel.get20Comments(postNo, pageable));
     }
 }
