@@ -30,13 +30,8 @@ public class Comment implements Serializable {
     @Column(name = "text")
     private String text;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private Comment parent;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
-    @Column(name = "child")
-    private List<Comment> child = new ArrayList<>();
+    @Column(name = "parent_id")
+    private Long parentId;
 
     @Column(name = "last_modified_time")
     private LocalDateTime lastModifiedTime;

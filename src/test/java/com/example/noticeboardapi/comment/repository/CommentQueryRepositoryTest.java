@@ -1,8 +1,11 @@
 package com.example.noticeboardapi.comment.repository;
 
 import com.example.noticeboardapi.comment.entity.Comment;
+import com.sun.source.tree.Tree;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.generated.test.tables.TreePath;
+import org.jooq.impl.DSL;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.jooq.generated.test.tables.Comment.COMMENT;
-import static org.jooq.impl.DSL.multisetAgg;
+import static org.jooq.generated.test.tables.TreePath.TREE_PATH;
+import static org.jooq.impl.DSL.*;
 
 @JooqTest
 @ActiveProfiles("test")
@@ -29,145 +33,58 @@ public class CommentQueryRepositoryTest {
     private DSLContext dslContext;
 
     @ParameterizedTest
-    @ValueSource(longs = {1L})
+    @ValueSource(longs = {1L}, ints = {9, 20})
     @DisplayName("특정 게시글 하위에 있는 댓글 20개 페이징")
-    void request20CommentUnderSpecificPost(Long postNo) {
-        Pageable pageable = PageRequest.of(5,20);
-        org.jooq.generated.test.tables.Comment c1 = new org.jooq.generated.test.tables.Comment("c1");
-        org.jooq.generated.test.tables.Comment c2 = new org.jooq.generated.test.tables.Comment("c2");
-
+    void request20CommentUnderSpecificPostTest(Long postNo, int[] pageRequest) {
+        Pageable pageable = PageRequest.of(pageRequest[0], pageRequest[1]);
 
         List<Comment> comments = dslContext
-                .select(
-                        c1.COMMENT_ID,
-                        c1.TEXT,
-                        c1.POST_ID,
-                        multisetAgg(
-                                c2.COMMENT_ID,
-                                c2.TEXT
-                        ).orderBy(c2.COMMENT_ID).as("child"))
-                .from(c1)
-                .join(c2)
-                .on(c1.COMMENT_ID.eq(c2.PARENT_ID))
-                .groupBy(c1.COMMENT_ID)
-                .having(c1.POST_ID.eq(postNo))
+                .select(COMMENT.COMMENT_ID, COMMENT.TEXT, COMMENT.CREATED_TIME,
+                        coalesce(COMMENT.PARENT_ID, COMMENT.COMMENT_ID).as("parent_id"))
+                .from(COMMENT)
+                .orderBy(DSL.field("parent_id"), COMMENT.COMMENT_ID)
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
                 .fetchInto(Comment.class);
 
         int count = dslContext.fetchCount(COMMENT, COMMENT.POST_ID.eq(postNo));
 
-        List<Comment> temp = new ArrayList<>(20);
-        int elementCount = 0;
+        Page<Comment> page = new PageImpl<>(comments, pageable, count);
         for (Comment comment : comments) {
-            elementCount += getCurrentCommentChildCount(comment);
-            if (hasEnoughSpaceInPage(pageable, temp)) {
-                if (isElementCountInRange(pageable, elementCount)) {
-                    addAllCommentsWhenInRange(pageable, temp, comment);
-                } else if (isElementCountGreaterThanRange(pageable, elementCount)) {
-                    addAllCommentsWhenGreaterThanRange(pageable, temp, elementCount, comment);
-                }
-            } else {
-                if (hasLastSpaceInPage(pageable, temp)) {
-                    temp.add(comment);
-                } else {
-                    break;
-                }
-            }
-        }
-
-        Page<Comment> page = new PageImpl<>(temp, pageable, count);
-        for (Comment comment : temp) {
-            System.out.println("comment = " + comment);
+            System.out.println("comment.getId() = " + comment.getId());
+            System.out.println("comment.getCreatedTime() = " + comment.getCreatedTime());
+            System.out.println("comment.getParent() = " + comment.getParentId());
         }
     }
 
     @Test
     void name() {
+        Long postNo = 1L;
         org.jooq.generated.test.tables.Comment c1 = new org.jooq.generated.test.tables.Comment("c1");
         org.jooq.generated.test.tables.Comment c2 = new org.jooq.generated.test.tables.Comment("c2");
+        TreePath cc1 = new TreePath("cc1");
+        TreePath cc2 = new TreePath("cc2");
+        TreePath breadcrumb = new TreePath("breadcrumb");
 
-        Field<?>[] parent = {
-
-        }
         List<Comment> comments = dslContext
                 .select(
-                        c2.COMMENT_ID,
-                        c2.TEXT,
-                        c1.POST_ID,
-                        c2.PARENT_ID
-                        )
+                        c2.asterisk(),
+                        cc2.ANCESTOR,
+                        groupConcat(breadcrumb.ANCESTOR).orderBy(breadcrumb.DEPTH.desc()).as("breadcrumbs")
+                )
                 .from(c1)
-                .join(c2)
-                .on(c1.COMMENT_ID.eq(c2.PARENT_ID))
-                .orderBy(c2.PARENT_ID,c1.COMMENT_ID)
-                .limit(20)
-                .offset(20)
+                .join(cc1).on(cc1.ANCESTOR.eq(c1.COMMENT_ID).and(cc1.POST_ID.eq(postNo)).and(c1.POST_ID.eq(postNo)))
+                .join(c2).on(cc1.DESCENDANT.eq(c2.COMMENT_ID).and(c2.POST_ID.eq(postNo)))
+                .leftOuterJoin(cc2).on(cc2.DESCENDANT.eq(c2.COMMENT_ID).and(cc2.DEPTH.eq(1L)))
+                .join(breadcrumb).on(cc1.DESCENDANT.eq(breadcrumb.DESCENDANT))
+                .where(c1.PARENT_ID.isNull())
+                .groupBy(cc1.DESCENDANT)
+                .orderBy(DSL.field("breadcrumbs"))
                 .fetchInto(Comment.class);
 
         for (Comment comment : comments) {
-            System.out.println("comment.getParent() = " + comment.getParent());
             System.out.println("comment.getId() = " + comment.getId());
             System.out.println("comment.getAuthor() = " + comment.getAuthor());
         }
-    }
-
-    private void addAllCommentsWhenGreaterThanRange(Pageable pageable, List<Comment> temp, int elementCount, Comment comment) {
-        if (isPreviousElementCountLessThanOffset(pageable, elementCount, comment)) {
-            addAllComments(pageable, temp, comment, elementCount);
-        } else if (hasFirstCommentOver20Child(elementCount, comment, pageable)) {
-            addAllFirstComments(pageable, temp, comment);
-        }
-        addAllCommentsWhenInRange(pageable, temp, comment);
-    }
-
-    private void addAllFirstComments(Pageable pageable, List<Comment> temp, Comment comment) {
-        temp.addAll(comment.getChild().subList((int) pageable.getOffset(),
-                ((pageable.getPageNumber() * pageable.getPageSize()) + pageable.getPageSize())));
-    }
-
-    private static int getCurrentCommentChildCount(Comment comment) {
-        return comment.getChild().size() + 1;
-    }
-
-    private static boolean isPreviousElementCountLessThanOffset(Pageable pageable, int elementCount, Comment comment) {
-        return elementCount - getCurrentCommentChildCount(comment) < pageable.getOffset();
-    }
-
-    private boolean isElementCountGreaterThanRange(Pageable pageable, int elementCount) {
-        return elementCount > ((pageable.getPageNumber() * pageable.getPageSize()) + pageable.getPageSize());
-    }
-
-    private static boolean hasLastSpaceInPage(Pageable pageable, List<Comment> temp) {
-        return pageable.getPageSize() - temp.size() - 1 == 1;
-    }
-
-    private static void addAllComments(Pageable pageable, List<Comment> temp, Comment comment, int elementCount) {
-        int offset = (int) pageable.getOffset() - (elementCount - getCurrentCommentChildCount(comment));
-        temp.addAll(comment.getChild().subList(offset,
-                pageable.getPageSize() - temp.size() + offset));
-    }
-
-    private static void addAllCommentsWhenInRange(Pageable pageable, List<Comment> temp, Comment comment) {
-        if (isCommentsGreaterThanPageCapacity(pageable, temp, comment)) {
-            temp.addAll(comment.getChild().subList(0, pageable.getPageSize() - temp.size()));
-        } else {
-            temp.addAll(comment.getChild().subList(0, pageable.getPageSize() - 1));
-        }
-    }
-
-    private static boolean hasFirstCommentOver20Child(int elementCount, Comment comment, Pageable pageable) {
-        return elementCount == comment.getChild().size() + 1 && pageable.getOffset() < getCurrentCommentChildCount(comment);
-    }
-
-    private static boolean isCommentsGreaterThanPageCapacity(Pageable pageable, List<Comment> temp, Comment comment) {
-        return comment.getChild().size() >= pageable.getPageSize() - temp.size();
-    }
-
-    private static boolean hasEnoughSpaceInPage(Pageable pageable, List<Comment> temp) {
-        return temp.size() < pageable.getPageSize() - 1;
-    }
-    
-    private static boolean isElementCountInRange(Pageable pageable, int elementCount) {
-        return elementCount > pageable.getOffset() &&
-                elementCount < ((pageable.getPageNumber() * pageable.getPageSize()) + pageable.getPageSize());
     }
 }
