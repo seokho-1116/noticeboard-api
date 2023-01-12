@@ -30,9 +30,6 @@ public class Comment implements Serializable {
     @Column(name = "text")
     private String text;
 
-    @Column(name = "parent_id")
-    private Long parentId;
-
     @Column(name = "last_modified_time")
     private LocalDateTime lastModifiedTime;
 
