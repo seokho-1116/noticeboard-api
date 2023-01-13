@@ -47,9 +47,7 @@ from COMMENT as c1
          join TREE_PATH as cc1 on (cc1.ancestor = c1.comment_id)
          join COMMENT as c2 on (cc1.descendant = c2.comment_id)
          left outer join TREE_PATH as cc2 on (cc2.descendant = c2.comment_id and cc2.depth = 1)
-         join TREE_PATH as breadcrumb on (cc1.descendant = breadcrumb.descendant)
-where c1.parent_id is null;
-
+         join TREE_PATH as breadcrumb on (cc1.descendant = breadcrumb.descendant);
 /*5step
   group by로 breadcrumb ancestor column 부모1,부모2... 자기 자신을 묶어버린다.*/
 select *, group_concat(breadcrumb.ancestor order by breadcrumb.depth DESC) as breadcrumbs
@@ -87,8 +85,8 @@ order by breadcrumbs;
 explain format = json select c2.*, cc2.ancestor as `_parent`,
        group_concat(breadcrumb.ancestor order by breadcrumb.depth DESC) as breadcrumbs
 from COMMENT as c1
-         join TREE_PATH cc1 on c1.comment_id = cc1.ancestor and c1.post_id = 2 and cc1.post_id = 2
-         join COMMENT as c2 on (cc1.descendant = c2.comment_id and c2.post_id = 2)
+         join TREE_PATH cc1 on c1.comment_id = cc1.ancestor and c1.post_id = 1 and cc1.post_id = 1
+         join COMMENT as c2 on (cc1.descendant = c2.comment_id and c2.post_id = 1)
          left outer join TREE_PATH as cc2 on (cc2.descendant = c2.comment_id and cc2.depth = 1)
          join TREE_PATH as breadcrumb on (cc1.descendant = breadcrumb.descendant)
 group by cc1.descendant
