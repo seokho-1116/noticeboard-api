@@ -7,13 +7,15 @@ import org.jooq.generated.test.tables.TreePath;
 import org.jooq.impl.DSL;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static org.jooq.generated.test.tables.Comment.COMMENT;
-import static org.jooq.impl.DSL.groupConcat;
+import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.field;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,9 +39,9 @@ public class CommentQueryRepository {
                 .from(c1)
                 .join(cc1).on(cc1.ANCESTOR.eq(c1.COMMENT_ID).and(cc1.POST_ID.eq(postNo)).and(c1.POST_ID.eq(postNo)))
                 .join(c2).on(cc1.DESCENDANT.eq(c2.COMMENT_ID).and(c2.POST_ID.eq(postNo)))
-                .leftOuterJoin(cc2).on(cc2.DESCENDANT.eq(c2.COMMENT_ID).and(cc2.DEPTH.eq(1L)))
+                .leftOuterJoin(cc2).on(cc2.DESCENDANT.eq(c2.COMMENT_ID).and(cc2.DEPTH.eq(1)))
                 .join(breadcrumb).on(cc1.DESCENDANT.eq(breadcrumb.DESCENDANT))
-                .where(c1.PARENT_ID.isNull())
+                .where(c1.COMMENT_ID.eq(0L))
                 .groupBy(cc1.DESCENDANT)
                 .orderBy(DSL.field("breadcrumbs"))
                 .limit(pageable.getPageSize())
@@ -51,4 +53,26 @@ public class CommentQueryRepository {
         return new PageImpl<>(comments, pageable, count);
     }
 
+    public Page<Comment> findPageContainingSpecificComment(Long postNo, Long commentNo) {
+        TreePath cc1 = new TreePath("cc1");
+        TreePath cc2 = new TreePath("cc2");
+        TreePath breadcrumb = new TreePath("breadcrumb");
+
+        Long rowNum = dslContext
+                .select(field("r.row_num"))
+                .from(select(rowNumber().over(orderBy(field("breadcrumbs"))).as("row_num"),
+                        cc1.DESCENDANT,
+                        groupConcat(breadcrumb.ANCESTOR).orderBy(breadcrumb.DEPTH.desc()).as("breadcrumbs"))
+                        .from(cc1)
+                        .leftOuterJoin(cc2).on(cc2.DESCENDANT.eq(cc1.DESCENDANT).and(cc2.DEPTH.eq(1)))
+                        .join(breadcrumb).on(cc1.DESCENDANT.eq(breadcrumb.DESCENDANT))
+                        .where(cc1.ANCESTOR.eq(0L))
+                        .groupBy(cc1.DESCENDANT)
+                        .orderBy(field("breadcrumbs")).asTable("r"))
+                .where("r.descendant = " + commentNo.toString())
+                .fetchOneInto(Long.class);
+
+        int page = rowNum.intValue() / 20;
+        return find20CommentsByPaging(postNo, PageRequest.of(page, 20));
+    }
 }
