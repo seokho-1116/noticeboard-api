@@ -19,13 +19,28 @@ public class CommentController {
     private final CommentReadModel commentReadModel;
 
     @PostMapping("/posts/{postNo}/comments")
-    public ResponseEntity<?> saveComment(@PathVariable Long postNo, @RequestBody CommentFormat commentFormat) {
+    public ResponseEntity<?> commentSave(@PathVariable Long postNo, @RequestBody CommentFormat commentFormat) {
         CommentDto commentDto = commentService.saveComment(postNo, commentFormat);
-        return ResponseEntity.created(URI.create("/posts/"+postNo+"/comments")).body(commentDto);
+        return ResponseEntity.created(URI.create("/posts/" + postNo + "/comments"))
+                .body(commentReadModel.getPageOf20CommentsContainingSpecificComment(postNo, commentDto));
+    }
+
+    @PostMapping("/posts/{postNo}/comments/{parentCommentId}/comments")
+    public ResponseEntity<?> replySave(@PathVariable Long postNo, @PathVariable Long parentCommentId,
+                                       @RequestBody CommentFormat commentFormat) {
+        CommentDto commentDto = commentService.saveReply(postNo, parentCommentId, commentFormat);
+        return ResponseEntity.created(URI.create("/posts/" + postNo + "/comments/" + parentCommentId + "/comments"))
+                .body(commentReadModel.getPageOf20CommentsContainingSpecificComment(postNo, commentDto));
     }
 
     @GetMapping("/posts/{postNo}/comments")
-    public ResponseEntity<?> getComments(@PathVariable Long postNo, @PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(commentReadModel.get20Comments(postNo, pageable));
+    public ResponseEntity<?> commentList(@PathVariable Long postNo, @PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(commentReadModel.getPageOf20Comments(postNo, pageable));
+    }
+
+    @DeleteMapping("/posts/{postNo}/comments/{commentNo}")
+    public ResponseEntity<?> commentDelete(@PathVariable Long postNo, @PathVariable Long commentNo) {
+        commentService.deleteComment(postNo, commentNo);
+        return ResponseEntity.ok().build();
     }
 }
