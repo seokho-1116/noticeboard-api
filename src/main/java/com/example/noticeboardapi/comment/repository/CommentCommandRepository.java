@@ -32,13 +32,17 @@ public class CommentCommandRepository {
         return saveComment;
     }
 
-    public Comment deleteComment(Long postNo, Long commentNo) {
-        Comment updatedComment = dslContext.update(COMMENT)
+    public void deleteComment(Long postNo, Long commentNo) {
+        dslContext.update(COMMENT)
                 .set(COMMENT.TEXT, "삭제된 댓글입니다.")
                 .where(COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)))
-                .returning()
-                .fetchOneInto(Comment.class);
+                .execute();
+    }
 
-        return updatedComment;
+    public void updateRecommendationCount(Long postNo, Long commentNo) {
+        dslContext.update(COMMENT)
+                .set(COMMENT.RECOMMENDATION_COUNT, COMMENT.RECOMMENDATION_COUNT.plus(1))
+                .where(COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)))
+                .execute();
     }
 }
