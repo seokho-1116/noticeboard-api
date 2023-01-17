@@ -1,9 +1,8 @@
 package com.example.noticeboardapi.post.controller;
 
 import com.example.noticeboardapi.post.entity.Category;
-import com.example.noticeboardapi.post.service.PostService;
+import com.example.noticeboardapi.post.service.PostCommandService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,7 +30,7 @@ public class PostControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private PostService postService;
+    private PostCommandService postCommandService;
 
     @Test
     @DisplayName("글쓰기 요청 테스트")
@@ -42,7 +39,7 @@ public class PostControllerTest {
                 List.of(new MockMultipartFile("image.jpg",new byte[1000]),
                         new MockMultipartFile("p1.mp4", new byte[10000])));
 
-        given(postService.savePost(any(PostFormat.class))).willReturn(1L);
+        given(postCommandService.savePost(any(PostFormat.class))).willReturn(1L);
         MockHttpServletResponse response = mvc.perform(post("/post")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postFormat)))
