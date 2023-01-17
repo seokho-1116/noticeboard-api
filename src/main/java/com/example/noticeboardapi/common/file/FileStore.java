@@ -1,4 +1,4 @@
-package com.example.noticeboardapi.common;
+package com.example.noticeboardapi.common.file;
 
 import com.example.noticeboardapi.post.entity.PostFile;
 import org.springframework.beans.factory.annotation.Value;

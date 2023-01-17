@@ -14,17 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PostReadModel {
+public class PostReadService {
 
     private final PostQueryRepository postQueryRepository;
     private final PostMapper postMapper = PostMapper.INSTANCE;
 
-    public Page<PostThumbnailDto> getPosts(Pageable pageable) {
-        Page<Post> posts = postQueryRepository.find10PostsByPaging(pageable);
+    public Page<PostThumbnailDto> find10Posts(Pageable pageable) {
+        Page<Post> posts = postQueryRepository.find10Posts(pageable);
         return posts.map(postMapper::fromPostToThumbnail);
     }
 
-    public PostDetailDto getPost(Long postNo) {
+    public PostDetailDto findPost(Long postNo) {
         Post post = postQueryRepository.findPostById(postNo);
         return postMapper.fromPostToDetail(post);
     }

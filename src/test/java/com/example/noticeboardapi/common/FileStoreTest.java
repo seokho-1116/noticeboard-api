@@ -1,5 +1,6 @@
 package com.example.noticeboardapi.common;
 
+import com.example.noticeboardapi.common.file.FileStore;
 import com.example.noticeboardapi.post.entity.PostFile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

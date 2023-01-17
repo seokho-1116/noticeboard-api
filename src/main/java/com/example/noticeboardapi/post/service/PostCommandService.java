@@ -1,6 +1,6 @@
 package com.example.noticeboardapi.post.service;
 
-import com.example.noticeboardapi.common.FileStore;
+import com.example.noticeboardapi.common.file.FileStore;
 import com.example.noticeboardapi.post.controller.PostFormat;
 import com.example.noticeboardapi.post.entity.Post;
 import com.example.noticeboardapi.post.entity.PostFile;
@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class PostService {
+public class PostCommandService {
 
     private final PostJpaRepository postJpaRepository;
     private final PostCommandRepository postCommandRepository;
