@@ -3,6 +3,7 @@ package com.example.noticeboardapi.comment.repository;
 import com.example.noticeboardapi.comment.entity.Comment;
 import com.example.noticeboardapi.comment.entity.TreePath;
 import org.jooq.DSLContext;
+import org.jooq.SelectConditionStep;
 import org.jooq.generated.test.tables.records.CommentRecord;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jooq.generated.test.tables.Comment.COMMENT;
+import static org.jooq.generated.test.tables.Post.POST;
 import static org.jooq.generated.test.tables.TreePath.TREE_PATH;
 
 @JooqTest
@@ -69,5 +71,27 @@ public class CommentCommandRepositoryTest {
 
         assertThat(commentNo.intValue()).isEqualTo(1003);
         assertThat(treePaths.stream().map(TreePath::getAncestor)).containsExactly(0L, 621L, 445L, 20L, 1003L);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {1L})
+    void updateRecommendationCountTest(Long postNo) {
+        Long commentNo = 1L;
+        Comment before = getComment(postNo, commentNo);
+
+        dslContext.update(COMMENT)
+                .set(COMMENT.RECOMMENDATION_COUNT, COMMENT.RECOMMENDATION_COUNT.plus(1))
+                .where(COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)))
+                .execute();
+
+        Comment after = getComment(postNo, commentNo);
+
+        assertThat(after.getRecommendationCount()).isEqualTo(before.getRecommendationCount() + 1);
+    }
+
+    private Comment getComment(Long postNo, Long commentNo) {
+        return dslContext.selectFrom(COMMENT)
+                .where(COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)))
+                .fetchOneInto(Comment.class);
     }
 }
