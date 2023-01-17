@@ -1,7 +1,7 @@
 package com.example.noticeboardapi.post.controller;
 
-import com.example.noticeboardapi.post.service.PostReadModel;
-import com.example.noticeboardapi.post.service.PostService;
+import com.example.noticeboardapi.post.service.PostReadService;
+import com.example.noticeboardapi.post.service.PostCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -15,35 +15,35 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class PostController {
 
-    private final PostService postService;
-    private final PostReadModel postReadModel;
+    private final PostCommandService postCommandService;
+    private final PostReadService postReadService;
 
     @PostMapping("/post")
-    public ResponseEntity<?> savePost(@RequestBody PostFormat postFormat) {
-        Long postNumber = postService.savePost(postFormat);
+    public ResponseEntity<?> postSave(@RequestBody PostFormat postFormat) {
+        Long postNumber = postCommandService.savePost(postFormat);
         return ResponseEntity.created(URI.create("/post/"+postNumber)).build();
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<?> getPosts(@PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(postReadModel.getPosts(pageable));
+    public ResponseEntity<?> postList(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(postReadService.find10Posts(pageable));
     }
 
     @GetMapping("/posts/{postNo}")
-    public ResponseEntity<?> getPost(@PathVariable Long postNo) {
-        postService.addViewCount(postNo);
-        return ResponseEntity.ok(postReadModel.getPost(postNo));
+    public ResponseEntity<?> postDetails(@PathVariable Long postNo) {
+        postCommandService.addViewCount(postNo);
+        return ResponseEntity.ok(postReadService.findPost(postNo));
     }
 
     @DeleteMapping("/posts/{postNo}")
-    public ResponseEntity<?> deletePost(@PathVariable Long postNo) {
-        postService.deletePost(postNo);
+    public ResponseEntity<?> postDelete(@PathVariable Long postNo) {
+        postCommandService.deletePost(postNo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/posts/{postNo}/recommend")
-    public ResponseEntity<?> recommendPost(@PathVariable Long postNo) {
-        postService.addRecommendationCount(postNo);
+    @PutMapping("/posts/{postNo}/recommendation")
+    public ResponseEntity<?> recommendationCountAdd(@PathVariable Long postNo) {
+        postCommandService.addRecommendationCount(postNo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
