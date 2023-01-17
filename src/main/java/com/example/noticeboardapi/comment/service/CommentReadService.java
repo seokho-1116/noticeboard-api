@@ -13,18 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CommentReadModel {
+public class CommentReadService {
 
     private final CommentQueryRepository commentQueryRepository;
     private final CommentMapper commentMapper = CommentMapper.INSTANCE;
 
-    public Page<CommentDto> getPageOf20Comments(Long postNo, Pageable pageable) {
-        Page<Comment> comments = commentQueryRepository.find20CommentsByPaging(postNo, pageable);
+    public Page<CommentDto> find20Comments(Long postNo, Pageable pageable) {
+        Page<Comment> comments = commentQueryRepository.find20Comments(postNo, pageable);
         return comments.map(commentMapper::fromComment);
     }
 
-    public Page<CommentDto> getPageOf20CommentsContainingSpecificComment(Long postNo, CommentDto commentDto) {
-        Page<Comment> comments = commentQueryRepository.findPageContainingSpecificComment(postNo, commentDto.getId());
+    public Page<CommentDto> find20CommentsContainingSpecificComment(Long postNo, CommentDto commentDto) {
+        Page<Comment> comments = commentQueryRepository.find20CommentsContainingSpecificComment(postNo, commentDto.getId());
         return comments.map(commentMapper::fromComment);
     }
 }
