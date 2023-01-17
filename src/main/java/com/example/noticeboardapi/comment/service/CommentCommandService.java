@@ -4,7 +4,6 @@ import com.example.noticeboardapi.comment.controller.CommentFormat;
 import com.example.noticeboardapi.comment.entity.Comment;
 import com.example.noticeboardapi.comment.repository.CommentCommandRepository;
 import com.example.noticeboardapi.comment.repository.CommentJpaRepository;
-import com.example.noticeboardapi.comment.repository.CommentQueryRepository;
 import com.example.noticeboardapi.comment.service.dto.CommentDto;
 import com.example.noticeboardapi.comment.service.dto.CommentMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class CommentService {
+public class CommentCommandService {
 
     private final CommentJpaRepository commentJpaRepository;
     private final CommentCommandRepository commentCommandRepository;
@@ -35,8 +34,11 @@ public class CommentService {
         return commentMapper.fromComment(savedComment);
     }
 
-    public CommentDto deleteComment(Long postNo, Long commentNo) {
-        Comment deletedComment = commentCommandRepository.deleteComment(postNo, commentNo);
-        return commentMapper.fromComment(deletedComment);
+    public void deleteComment(Long postNo, Long commentNo) {
+        commentCommandRepository.deleteComment(postNo, commentNo);
+    }
+
+    public void addRecommendationCount(Long postNo, Long commentNo) {
+        commentCommandRepository.updateRecommendationCount(postNo, commentNo);
     }
 }
