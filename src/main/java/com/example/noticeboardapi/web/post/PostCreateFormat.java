@@ -4,21 +4,22 @@ import com.example.noticeboardapi.domain.post.entity.Category;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class PostCreateFormat {
-    @NotBlank
+    @NotEmpty
     private String author;
 
-    @NotNull
+    @NotEmpty
     private Category category;
 
-    @NotBlank
+    @NotEmpty
     private String title;
 
-    @NotNull
+    @NotEmpty
     private String text;
 }

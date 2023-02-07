@@ -12,10 +12,10 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 public class CommentCreateFormat {
-    @NotBlank
+    @NotEmpty
     private String author;
 
-    @NotNull
+    @NotEmpty
     private String text;
 
     public CommentCreateFormat(String author, String text) {
