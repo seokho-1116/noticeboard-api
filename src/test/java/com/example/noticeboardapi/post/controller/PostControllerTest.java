@@ -2,6 +2,7 @@ package com.example.noticeboardapi.post.controller;
 
 import com.example.noticeboardapi.post.entity.Category;
 import com.example.noticeboardapi.post.service.PostCommandService;
+import com.example.noticeboardapi.post.service.PostReadService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ public class PostControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private PostReadService postReadService;
 
     @MockBean
     private PostCommandService postCommandService;
