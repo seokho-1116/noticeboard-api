@@ -2,6 +2,7 @@ drop table if exists POST_FILE;
 drop table if exists MEMBER;
 drop table if exists PROFILE_FILE;
 drop table if exists COMMENT;
+drop table if exists TREE_PATH;
 drop table if exists POST;
 
 create table POST (
@@ -17,7 +18,7 @@ create table POST (
                       view_count integer,
                       primary key (post_id)) engine=InnoDB;
 create table COMMENT (
-    comment_id bigint(10) not null auto_increment,
+    comment_id bigint(10) zerofill not null auto_increment,
     author varchar(30),
     created_time datetime(6),
     last_modified_time datetime(6),
@@ -50,8 +51,8 @@ create table POST_FILE (
     constraint FK_POST_FILE_POST foreign key (post_id) references POST (post_id)) engine=InnoDB;
 create table TREE_PATH(
     post_id    bigint(15) not null,
-    ancestor   bigint(10) not null,
-    descendant bigint(10) not null,
+    ancestor   bigint(10) zerofill not null,
+    descendant bigint(10) zerofill not null,
     depth      int,
     primary key (post_id, ancestor, descendant),
     constraint FK_TREE_PATH_POST_ID_COMMENT

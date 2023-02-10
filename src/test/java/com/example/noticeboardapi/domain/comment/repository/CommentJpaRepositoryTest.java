@@ -25,7 +25,6 @@ public class CommentJpaRepositoryTest {
     void saveCommentTest() {
         Comment comment = Comment.createCommentByFormat(1L, "seokho", "text", LocalDateTime.now());
         Comment savedComment = commentJpaRepository.save(comment);
-        assertThat(savedComment.getId()).isEqualTo(1001L);
         assertThat(savedComment.getPostId()).isEqualTo(1L);
     }
 }

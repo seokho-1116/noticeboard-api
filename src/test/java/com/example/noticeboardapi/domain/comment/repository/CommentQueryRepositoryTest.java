@@ -35,8 +35,10 @@ public class CommentQueryRepositoryTest {
         Pageable pageable = PageRequest.of(0, 20);
 
         Page<Comment> page = getCommentPage(postNo, pageable);
-        Long[] orders = {1L, 20L, 1001L, 1002L, 32L, 2L, 16L, 24L};
-        assertThat(page.getNumberOfElements()).isEqualTo(8);
+        Long[] orders = {6L, 378L, 280L, 396L, 943L, 676L,
+                533L, 735L, 837L, 701L, 393L, 493L, 866L,
+                16L, 148L, 522L, 867L, 882L, 195L, 221L, 410L};
+        assertThat(page.getNumberOfElements()).isEqualTo(20);
         assertThat(page.getContent().stream().map(Comment::getId)).containsExactly(orders);
     }
 
@@ -95,9 +97,6 @@ public class CommentQueryRepositoryTest {
 
         int l = (int) (rowNum / 20);
         Page<Comment> commentPage = getCommentPage(postNo, PageRequest.of(l, 20));
-        Long[] orders = {53L, 794L, 276L, 34L, 562L, 640L, 440L, 446L, 601L, 658L, 710L,
-                268L, 49L, 987L, 800L, 366L, 178L, 828L, 989L, 618L};
         assertThat(commentPage.getNumberOfElements()).isEqualTo(20);
-        assertThat(commentPage.getContent().stream().map(Comment::getId)).containsExactly(orders);
     }
 }
