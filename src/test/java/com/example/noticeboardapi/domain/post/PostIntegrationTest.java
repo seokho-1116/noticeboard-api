@@ -1,4 +1,4 @@
-adpackage com.example.noticeboardapi.domain.post;
+package com.example.noticeboardapi.domain.post;
 
 import com.example.noticeboardapi.web.post.PostCreateFormat;
 import com.example.noticeboardapi.domain.post.entity.Category;

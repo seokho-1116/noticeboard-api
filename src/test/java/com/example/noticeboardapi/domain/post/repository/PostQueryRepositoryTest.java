@@ -34,7 +34,7 @@ public class PostQueryRepositoryTest {
     @Test
     @DisplayName("메인 페이지에서 게시글 10개의 썸네일 목록을 최신순으로 보여주기 테스트")
     void request10LatestPostsThumbnail() {
-        Pageable pageable = PageRequest.of(98, 10);
+        Pageable pageable = PageRequest.of(1, 10);
         int total = dslContext.fetchCount(POST);
         Long offset = getOffset(pageable, total);
 
