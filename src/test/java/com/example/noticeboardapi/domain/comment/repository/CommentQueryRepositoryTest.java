@@ -37,7 +37,7 @@ public class CommentQueryRepositoryTest {
         Page<Comment> page = getCommentPage(postNo, pageable);
         Long[] orders = {6L, 378L, 280L, 396L, 943L, 676L,
                 533L, 735L, 837L, 701L, 393L, 493L, 866L,
-                16L, 148L, 522L, 867L, 882L, 195L, 221L, 410L};
+                16L, 148L, 522L, 867L, 882L, 195L, 221L};
         assertThat(page.getNumberOfElements()).isEqualTo(20);
         assertThat(page.getContent().stream().map(Comment::getId)).containsExactly(orders);
     }

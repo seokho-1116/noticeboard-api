@@ -100,7 +100,7 @@ public class PostQueryRepositoryTest {
     @Test
     @DisplayName("게시글 번호로 특정 게시글 요청 테스트")
     void requestSpecificPost() {
-        Long postNo = 1003L;
+        Long postNo = 1L;
         Post post = dslContext.select(POST.POST_ID, POST.AUTHOR, POST.TITLE,
                         POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
                         POST.VIEW_COUNT, POST.TEXT,
