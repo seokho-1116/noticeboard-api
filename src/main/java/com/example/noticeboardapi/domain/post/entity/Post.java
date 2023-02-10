@@ -1,5 +1,6 @@
 package com.example.noticeboardapi.domain.post.entity;
 
+import com.example.noticeboardapi.comment.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
