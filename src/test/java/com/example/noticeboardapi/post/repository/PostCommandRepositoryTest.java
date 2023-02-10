@@ -4,6 +4,7 @@ import com.example.noticeboardapi.comment.entity.Comment;
 import com.example.noticeboardapi.post.entity.Post;
 import com.example.noticeboardapi.post.entity.PostFile;
 import org.jooq.DSLContext;
+import org.jooq.generated.test.tables.TreePath;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jooq.generated.test.tables.Comment.COMMENT;
 import static org.jooq.generated.test.tables.Post.POST;
 import static org.jooq.generated.test.tables.PostFile.POST_FILE;
+import static org.jooq.generated.test.tables.TreePath.TREE_PATH;
 
 @JooqTest
 class PostCommandRepositoryTest {
@@ -51,6 +53,9 @@ class PostCommandRepositoryTest {
     void deletePostTest(Long postNo) {
         dslContext.delete(POST_FILE)
                 .where(POST_FILE.POST_ID.eq(postNo))
+                .execute();
+        dslContext.delete(TREE_PATH)
+                .where(TREE_PATH.POST_ID.eq(postNo))
                 .execute();
         dslContext.delete(COMMENT)
                 .where(COMMENT.POST_ID.eq(postNo))
