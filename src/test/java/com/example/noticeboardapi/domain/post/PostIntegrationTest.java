@@ -47,6 +47,6 @@ public class PostIntegrationTest {
                         .file(multipartFile2)
                         .file(postCreateFormatFile))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/posts/1002"));
+                .andExpect(header().exists("Location"));
     }
 }

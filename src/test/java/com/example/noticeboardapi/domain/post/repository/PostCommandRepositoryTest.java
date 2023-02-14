@@ -1,9 +1,9 @@
 package com.example.noticeboardapi.domain.post.repository;
 
-import com.example.noticeboardapi.domain.comment.entity.Comment;
 import com.example.noticeboardapi.domain.post.entity.Post;
 import com.example.noticeboardapi.domain.post.entity.PostFile;
 import org.jooq.DSLContext;
+import org.jooq.generated.test.tables.Comment;
 import org.jooq.generated.test.tables.TreePath;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

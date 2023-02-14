@@ -45,7 +45,7 @@ public class CommentQueryRepository {
                 .groupBy(tp1.DESCENDANT)
                 .orderBy(DSL.field("breadcrumbs"))
                 .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
+                .offset(pageable.getOffset() + 1)
                 .fetchInto(Comment.class);
 
         int count = dslContext.fetchCount(COMMENT, COMMENT.POST_ID.eq(postNo));

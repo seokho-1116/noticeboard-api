@@ -14,7 +14,7 @@ public class PostCreateFormat {
     @NotEmpty
     private String author;
 
-    @NotEmpty
+    @NotNull
     private Category category;
 
     @NotEmpty
