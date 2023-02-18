@@ -43,7 +43,7 @@ public class PostQueryRepositoryTest {
 
         Page<Post> result = new PageImpl<>(posts, pageable, total);
 
-        List<Long> orders = LongStream.range(offset - pageable.getPageSize() + 1, offset + 1)
+        List<Long> orders = LongStream.range(offset, offset + pageable.getPageSize())
                 .boxed()
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
@@ -74,7 +74,7 @@ public class PostQueryRepositoryTest {
     }
 
     private Condition isPostIdGtThanCursor(Long offset) {
-        return POST.POST_ID.le(offset);
+        return POST.POST_ID.gt(offset);
     }
 
     @Test
