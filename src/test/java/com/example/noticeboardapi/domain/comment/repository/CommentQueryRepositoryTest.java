@@ -4,6 +4,7 @@ import com.example.noticeboardapi.domain.comment.entity.Comment;
 import org.jooq.DSLContext;
 import org.jooq.generated.test.tables.TreePath;
 import org.jooq.impl.DSL;
+import org.jooq.types.ULong;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -60,7 +61,7 @@ public class CommentQueryRepositoryTest {
                 .join(c2).on(cc1.DESCENDANT.eq(c2.COMMENT_ID).and(c2.POST_ID.eq(postNo)))
                 .leftOuterJoin(cc2).on(cc2.DESCENDANT.eq(c2.COMMENT_ID).and(cc2.DEPTH.eq(1)))
                 .join(breadcrumb).on(cc1.DESCENDANT.eq(breadcrumb.DESCENDANT))
-                .where(c1.COMMENT_ID.eq(0L))
+                .where(c1.COMMENT_ID.eq(ULong.valueOf(0L)))
                 .groupBy(cc1.DESCENDANT)
                 .orderBy(DSL.field("breadcrumbs"))
                 .limit(pageable.getPageSize())
@@ -89,7 +90,7 @@ public class CommentQueryRepositoryTest {
                         .from(cc1)
                         .leftOuterJoin(cc2).on(cc2.DESCENDANT.eq(cc1.DESCENDANT).and(cc2.DEPTH.eq(1)))
                         .join(breadcrumb).on(cc1.DESCENDANT.eq(breadcrumb.DESCENDANT))
-                        .where(cc1.ANCESTOR.eq(0L))
+                        .where(cc1.ANCESTOR.eq(ULong.valueOf((0L))))
                         .groupBy(cc1.DESCENDANT)
                         .orderBy(field("breadcrumbs")).asTable("r"))
                 .where("r.descendant = " + "800")

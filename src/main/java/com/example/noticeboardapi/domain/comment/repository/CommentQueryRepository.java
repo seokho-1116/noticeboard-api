@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.generated.test.tables.TreePath;
 import org.jooq.impl.DSL;
+import org.jooq.types.ULong;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +42,7 @@ public class CommentQueryRepository {
                 .join(c2).on(tp1.DESCENDANT.eq(c2.COMMENT_ID).and(c2.POST_ID.eq(postNo)))
                 .leftOuterJoin(tp2).on(tp2.DESCENDANT.eq(c2.COMMENT_ID).and(tp2.DEPTH.eq(1)))
                 .join(breadcrumb).on(tp1.DESCENDANT.eq(breadcrumb.DESCENDANT))
-                .where(c1.COMMENT_ID.eq(0L))
+                .where(c1.COMMENT_ID.eq(ULong.valueOf(0L)))
                 .groupBy(tp1.DESCENDANT)
                 .orderBy(DSL.field("breadcrumbs"))
                 .limit(pageable.getPageSize())
@@ -66,7 +67,7 @@ public class CommentQueryRepository {
                         .from(tp1)
                         .leftOuterJoin(tp2).on(tp2.DESCENDANT.eq(tp1.DESCENDANT).and(tp2.DEPTH.eq(1)))
                         .join(breadcrumb).on(tp1.DESCENDANT.eq(breadcrumb.DESCENDANT))
-                        .where(tp1.ANCESTOR.eq(0L))
+                        .where(tp1.ANCESTOR.eq(ULong.valueOf((0L))))
                         .groupBy(tp1.DESCENDANT)
                         .orderBy(field("breadcrumbs")).asTable("r"))
                 .where("r.descendant = " + commentNo.toString())

@@ -8,6 +8,7 @@ import org.jooq.Field;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.generated.test.tables.records.CommentRecord;
 import org.jooq.impl.DSL;
+import org.jooq.types.ULong;
 import org.springframework.stereotype.Repository;
 
 import static org.jooq.generated.test.tables.Comment.COMMENT;
@@ -28,8 +29,8 @@ public class CommentCommandRepository {
                     .select(DSL.select(DSL.val(comment.getPostId()), TREE_PATH.ANCESTOR,
                                     DSL.val(saveComment.getId()), TREE_PATH.DEPTH.plus(1))
                             .from(TREE_PATH)
-                            .where(TREE_PATH.DESCENDANT.eq(parentCommentNo))
-                        .unionAll(DSL.select(DSL.val(comment.getPostId()), DSL.val(saveComment.getId()),
+                            .where(TREE_PATH.DESCENDANT.eq(ULong.valueOf(parentCommentNo)))
+                        .unionAll(DSL.select(DSL.val(comment.getPostId()), DSL.val(ULong.valueOf(saveComment.getId())),
                                 DSL.val(saveComment.getId()), DSL.val(0)))
                 ).execute();
 
@@ -37,7 +38,8 @@ public class CommentCommandRepository {
     }
 
     public void deleteComment(Long postNo, Long commentNo) {
-        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)));
+        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo)
+                .and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
 
         if (commentRecord == null) {
             throw new NoSuchCommentExcpetion();
@@ -48,7 +50,7 @@ public class CommentCommandRepository {
     }
 
     public void updateRecommendationCount(Long postNo, Long commentNo) {
-        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)));
+        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
 
         if (commentRecord == null) {
             throw new NoSuchCommentExcpetion();
