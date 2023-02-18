@@ -2,6 +2,7 @@ package com.example.noticeboardapi.domain.comment.repository;
 
 import com.example.noticeboardapi.domain.comment.entity.Comment;
 import com.example.noticeboardapi.domain.comment.entity.TreePath;
+import com.example.noticeboardapi.domain.comment.exception.NoSuchCommentExcpetion;
 import org.jooq.DSLContext;
 import org.jooq.generated.test.tables.records.CommentRecord;
 import org.jooq.impl.DSL;
@@ -29,10 +30,10 @@ public class CommentCommandRepositoryTest {
     @ValueSource(longs = {1L})
     void commentDeleteTest(Long commentNo) {
         Long postNo = 1L;
-        dslContext.update(COMMENT)
-                .set(COMMENT.TEXT, "삭제된 댓글입니다.")
-                .where(COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)))
-                .execute();
+        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)));
+
+        commentRecord.setText("삭제된 댓글입니다.");
+        commentRecord.store();
 
         Comment comment = dslContext.selectFrom(COMMENT)
                 .where(COMMENT.COMMENT_ID.eq(commentNo))
@@ -77,10 +78,10 @@ public class CommentCommandRepositoryTest {
         Long commentNo = 1L;
         Comment before = getComment(postNo, commentNo);
 
-        dslContext.update(COMMENT)
-                .set(COMMENT.RECOMMENDATION_COUNT, COMMENT.RECOMMENDATION_COUNT.plus(1))
-                .where(COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)))
-                .execute();
+        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)));
+
+        commentRecord.setRecommendationCount(commentRecord.getRecommendationCount() + 1);
+        commentRecord.store();
 
         Comment after = getComment(postNo, commentNo);
 

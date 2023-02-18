@@ -25,7 +25,6 @@ public class PostController {
 
     @PostMapping(value = "/posts", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> postSave(@RequestPart @Validated PostCreateFormat postCreateFormat,
-                                      BindingResult bindingResult,
                                       @RequestPart(name = "file", required = false) List<MultipartFile> multipartFiles) {
         Long postNumber = postCommandService.savePost(postCreateFormat, multipartFiles);
         return ResponseEntity.created(URI.create("/posts/"+postNumber)).build();

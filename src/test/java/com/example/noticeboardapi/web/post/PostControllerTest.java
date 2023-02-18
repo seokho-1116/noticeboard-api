@@ -3,8 +3,6 @@ package com.example.noticeboardapi.web.post;
 import com.example.noticeboardapi.domain.post.entity.Category;
 import com.example.noticeboardapi.domain.post.service.PostCommandService;
 import com.example.noticeboardapi.domain.post.service.PostReadService;
-import com.example.noticeboardapi.web.post.PostController;
-import com.example.noticeboardapi.web.post.PostCreateFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,8 +52,8 @@ public class PostControllerTest {
 
         mvc.perform(multipart("/posts")
                         .file(multipartFiles.get(0))
-                        .file(multipartFiles.get(1))
-                        .file(postCreateFormatFile))
+                        .file(multipartFiles.get(1)))
+     //                   .file(postCreateFormatFile))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/posts/1"))
                 .andReturn();

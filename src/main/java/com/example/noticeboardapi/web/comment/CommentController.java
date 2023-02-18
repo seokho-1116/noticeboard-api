@@ -22,8 +22,7 @@ public class CommentController {
     private final CommentReadService commentReadService;
 
     @PostMapping("/posts/{postNo}/comments")
-    public ResponseEntity<?> commentSave(@PathVariable Long postNo, @RequestBody @Validated CommentCreateFormat commentCreateFormat,
-                                         BindingResult bindingResult) {
+    public ResponseEntity<?> commentSave(@PathVariable Long postNo, @RequestBody @Validated CommentCreateFormat commentCreateFormat) {
         CommentDto commentDto = commentCommandService.saveComment(postNo, commentCreateFormat);
         return ResponseEntity.created(URI.create("/posts/" + postNo + "/comments"))
                 .body(commentReadService.find20CommentsContainingSpecificComment(postNo, commentDto));
