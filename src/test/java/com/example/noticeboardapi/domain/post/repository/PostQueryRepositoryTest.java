@@ -34,19 +34,21 @@ public class PostQueryRepositoryTest {
     @Test
     @DisplayName("메인 페이지에서 게시글 10개의 썸네일 목록을 최신순으로 보여주기 테스트")
     void request10LatestPostsThumbnail() {
-        Pageable pageable = PageRequest.of(1, 10);
+        Pageable pageable = PageRequest.of(99, 10);
+
         int total = dslContext.fetchCount(POST);
         Long offset = getOffset(pageable, total);
 
-        List<Post> posts = getPosts(pageable, isPostIdGtThanCursor(offset))
+        List<Post> posts = getSelectQueryOnLatestPosts(pageable, isPostIdLeThanCursor(offset))
                     .fetchInto(Post.class);
 
         Page<Post> result = new PageImpl<>(posts, pageable, total);
 
-        List<Long> orders = LongStream.range(offset, offset + pageable.getPageSize())
+        List<Long> orders = LongStream.range(offset - pageable.getPageSize() + 1, offset + 1)
                 .boxed()
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
+
         assertThat(result.getNumberOfElements()).isEqualTo(10);
         assertThat(result.getContent().stream().map(Post::getId)).containsExactlyElementsOf(orders);
     }
@@ -55,7 +57,7 @@ public class PostQueryRepositoryTest {
         return total - pageable.getOffset();
     }
 
-    private SelectLimitPercentStep<?> getPosts(Pageable pageable, Condition condition) {
+    private SelectLimitPercentStep<?> getSelectQueryOnLatestPosts(Pageable pageable, Condition condition) {
         return dslContext
                 .select(POST.POST_ID, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
                         multisetAgg(
@@ -73,8 +75,8 @@ public class PostQueryRepositoryTest {
                 .limit(pageable.getPageSize());
     }
 
-    private Condition isPostIdGtThanCursor(Long offset) {
-        return POST.POST_ID.gt(offset);
+    private Condition isPostIdLeThanCursor(Long offset) {
+        return POST.POST_ID.le(offset);
     }
 
     @Test
@@ -83,7 +85,7 @@ public class PostQueryRepositoryTest {
         Pageable pageable = PageRequest.of(30, 10);
         int total = dslContext.fetchCount(POST);
 
-        List<Post> posts = getPosts(pageable, isPopularPost())
+        List<Post> posts = getSelectQueryOnLatestPosts(pageable, isPopularPost())
                     .offset(pageable.getOffset())
                     .fetchInto(Post.class);
 
