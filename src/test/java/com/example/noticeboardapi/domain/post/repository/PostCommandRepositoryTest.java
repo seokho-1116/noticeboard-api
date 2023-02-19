@@ -5,11 +5,13 @@ import com.example.noticeboardapi.domain.post.entity.PostFile;
 import org.jooq.DSLContext;
 import org.jooq.generated.test.tables.Comment;
 import org.jooq.generated.test.tables.TreePath;
+import org.jooq.generated.test.tables.records.PostRecord;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
@@ -20,6 +22,7 @@ import static org.jooq.generated.test.tables.PostFile.POST_FILE;
 import static org.jooq.generated.test.tables.TreePath.TREE_PATH;
 
 @JooqTest
+@ActiveProfiles("test")
 class PostCommandRepositoryTest {
 
     @Autowired
@@ -31,10 +34,10 @@ class PostCommandRepositoryTest {
     void updateViewCountTest(Long postNo) {
         Post before = getExecute(postNo);
 
-        dslContext.update(POST)
-                .set(POST.VIEW_COUNT, POST.VIEW_COUNT.plus(1))
-                .where(POST.POST_ID.eq(postNo))
-                .execute();
+        PostRecord postRecord = dslContext.fetchOne(POST, POST.POST_ID.eq(postNo));
+
+        postRecord.setViewCount(postRecord.getViewCount() + 1);
+        postRecord.store(POST.VIEW_COUNT);
 
         Post after = getExecute(postNo);
         assertThat(after.getViewCount() - before.getViewCount()).isEqualTo(1);
@@ -49,20 +52,25 @@ class PostCommandRepositoryTest {
 
     @ParameterizedTest
     @ValueSource(longs = {1L})
+    @DisplayName("게시물 추천 테스트")
+    void updateRecommendationCountTest(Long postNo) {
+        Post before = getExecute(postNo);
+
+        PostRecord postRecord = dslContext.fetchOne(POST, POST.POST_ID.eq(postNo));
+
+        postRecord.setRecommendationCount(postRecord.getRecommendationCount() + 1);
+        postRecord.store(POST.RECOMMENDATION_COUNT);
+
+        Post after = getExecute(postNo);
+        assertThat(after.getRecommendationCount() - before.getRecommendationCount()).isEqualTo(1);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {1L})
     @DisplayName("게시물 삭제 테스트")
     void deletePostTest(Long postNo) {
-        dslContext.delete(POST_FILE)
-                .where(POST_FILE.POST_ID.eq(postNo))
-                .execute();
-        dslContext.delete(TREE_PATH)
-                .where(TREE_PATH.POST_ID.eq(postNo))
-                .execute();
-        dslContext.delete(COMMENT)
-                .where(COMMENT.POST_ID.eq(postNo))
-                .execute();
-        dslContext.delete(POST)
-                .where(POST.POST_ID.eq(postNo))
-                .execute();
+        PostRecord postRecord = dslContext.fetchOne(POST, POST.POST_ID.eq(postNo));
+        postRecord.delete();
 
         Optional<Post> post = dslContext.selectFrom(POST)
                 .where(POST.POST_ID.eq(postNo))
@@ -70,6 +78,9 @@ class PostCommandRepositoryTest {
         Optional<PostFile> postFile = dslContext.selectFrom(POST_FILE)
                 .where(POST_FILE.POST_ID.eq(postNo))
                 .fetchOptionalInto(PostFile.class);
+        Optional<TreePath> treePath = dslContext.selectFrom(TREE_PATH)
+                .where(TREE_PATH.POST_ID.eq(postNo))
+                .fetchOptionalInto(TreePath.class);
         Optional<Comment> comment = dslContext.selectFrom(COMMENT)
                 .where(COMMENT.POST_ID.eq(postNo))
                 .fetchOptionalInto(Comment.class);
@@ -77,21 +88,7 @@ class PostCommandRepositoryTest {
 
         assertThat(post.isEmpty()).isTrue();
         assertThat(postFile.isEmpty()).isTrue();
+        assertThat(treePath.isEmpty()).isTrue();
         assertThat(comment.isEmpty()).isTrue();
-    }
-
-    @ParameterizedTest
-    @ValueSource(longs = {1L})
-    @DisplayName("게시물 추천 테스트")
-    void updateRecommendationCountTest(Long postNo) {
-        Post before = getExecute(postNo);
-
-        dslContext.update(POST)
-                .set(POST.RECOMMENDATION_COUNT, POST.RECOMMENDATION_COUNT.plus(1))
-                .where(POST.POST_ID.eq(postNo))
-                .execute();
-
-        Post after = getExecute(postNo);
-        assertThat(after.getRecommendationCount() - before.getRecommendationCount()).isEqualTo(1);
     }
 }
