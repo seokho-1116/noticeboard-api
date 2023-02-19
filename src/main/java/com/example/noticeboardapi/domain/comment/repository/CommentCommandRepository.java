@@ -1,11 +1,9 @@
 package com.example.noticeboardapi.domain.comment.repository;
 
 import com.example.noticeboardapi.domain.comment.entity.Comment;
-import com.example.noticeboardapi.domain.comment.exception.NoSuchCommentExcpetion;
+import com.example.noticeboardapi.domain.comment.exception.NoSuchCommentException;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.UpdateSetMoreStep;
 import org.jooq.generated.test.tables.records.CommentRecord;
 import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
@@ -42,7 +40,7 @@ public class CommentCommandRepository {
                 .and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
 
         if (commentRecord == null) {
-            throw new NoSuchCommentExcpetion();
+            throw new NoSuchCommentException();
         }
 
         commentRecord.setText("삭제된 댓글 입니다.");
@@ -50,10 +48,11 @@ public class CommentCommandRepository {
     }
 
     public void updateRecommendationCount(Long postNo, Long commentNo) {
-        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
+        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo)
+                .and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
 
         if (commentRecord == null) {
-            throw new NoSuchCommentExcpetion();
+            throw new NoSuchCommentException();
         }
 
         commentRecord.setRecommendationCount(commentRecord.getRecommendationCount() + 1);

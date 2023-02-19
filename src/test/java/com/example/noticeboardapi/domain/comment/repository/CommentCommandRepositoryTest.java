@@ -2,7 +2,6 @@ package com.example.noticeboardapi.domain.comment.repository;
 
 import com.example.noticeboardapi.domain.comment.entity.Comment;
 import com.example.noticeboardapi.domain.comment.entity.TreePath;
-import com.example.noticeboardapi.domain.comment.exception.NoSuchCommentExcpetion;
 import org.jooq.DSLContext;
 import org.jooq.generated.test.tables.records.CommentRecord;
 import org.jooq.impl.DSL;
