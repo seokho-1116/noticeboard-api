@@ -1,12 +1,13 @@
 package com.example.noticeboardapi.domain.post.repository;
 
 import com.example.noticeboardapi.domain.post.entity.Post;
+import com.example.noticeboardapi.domain.post.exception.NoSuchPostException;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
+import org.jooq.generated.test.tables.records.PostRecord;
 import org.springframework.stereotype.Repository;
 
-import static org.jooq.generated.test.Tables.COMMENT;
-import static org.jooq.generated.test.Tables.POST_FILE;
+import static org.jooq.generated.test.Tables.*;
 import static org.jooq.generated.test.tables.Post.POST;
 
 @Repository
@@ -16,30 +17,32 @@ public class PostCommandRepository {
     private final DSLContext dslContext;
 
     public void updateViewCount(Long postNo) {
-        dslContext.update(POST)
-                .set(POST.VIEW_COUNT, POST.VIEW_COUNT.plus(1))
-                .where(POST.POST_ID.eq(postNo))
-                .execute();
+        PostRecord postRecord = getPostRecord(postNo);
+
+        postRecord.setViewCount(postRecord.getViewCount() + 1);
+        postRecord.store(POST.VIEW_COUNT);
     }
 
     public void updateRecommendationCount(Long postNo) {
-        dslContext.select(POST.asterisk())
-                .from(POST)
-                .where(POST.POST_ID.eq(postNo))
-                .fetchOneInto(Post.class);
+        PostRecord postRecord = getPostRecord(postNo);
+
+        postRecord.setViewCount(postRecord.getRecommendationCount() + 1);
+        postRecord.store(POST.RECOMMENDATION_COUNT);
+    }
+
+    private PostRecord getPostRecord(Long postNo) {
+        PostRecord postRecord = dslContext.fetchOne(POST, POST.POST_ID.eq(postNo));
+
+        if (postRecord == null) {
+            throw new NoSuchPostException();
+        }
+
+        return postRecord;
     }
 
     public void deletePost(Long postNo) {
-        dslContext.delete(POST_FILE)
-                .where(POST_FILE.POST_ID.eq(postNo))
-                .execute();
+        PostRecord postRecord = getPostRecord(postNo);
 
-        dslContext.delete(COMMENT)
-                .where(COMMENT.POST_ID.eq(postNo))
-                .execute();
-
-        dslContext.delete(POST)
-                .where(POST.POST_ID.eq(postNo))
-                .execute();
+        postRecord.delete();
     }
 }
