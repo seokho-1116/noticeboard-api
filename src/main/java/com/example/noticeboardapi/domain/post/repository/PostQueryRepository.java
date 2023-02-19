@@ -1,6 +1,7 @@
 package com.example.noticeboardapi.domain.post.repository;
 
 import com.example.noticeboardapi.domain.post.entity.Post;
+import com.example.noticeboardapi.domain.post.exception.NoSuchPostException;
 import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -36,30 +37,12 @@ public class PostQueryRepository {
     }
 
     private List<Post> getPopularPosts(Pageable pageable) {
-        return getPostLimitQuery(pageable, isPopularPost())
+        return getSelectQueryOnLatestPosts(pageable, isPopularPost())
                 .offset(pageable.getOffset())
                 .fetchInto(Post.class);
     }
 
-    private List<Post> getLatestPost(Pageable pageable, int total) {
-        Long offset = total - pageable.getOffset();
-        return getPostLimitQuery(pageable, isPostIdGtThanCursor(offset))
-                .fetchInto(Post.class);
-    }
-
-    private long getOffset(Pageable pageable, int total) {
-        return total - pageable.getOffset();
-    }
-
-    private Condition isPopularPost() {
-        return POST.RECOMMENDATION_COUNT.ge(60);
-    }
-
-    private Condition isPostIdGtThanCursor(Long offset) {
-        return POST.POST_ID.gt(offset);
-    }
-
-    private SelectLimitPercentStep<?> getPostLimitQuery(Pageable pageable, Condition condition) {
+    private SelectLimitPercentStep<?> getSelectQueryOnLatestPosts(Pageable pageable, Condition condition) {
         return dslContext
                 .select(POST.POST_ID, POST.AUTHOR, POST.TITLE, POST.CREATED_TIME, POST.CATEGORY, POST.RECOMMENDATION_COUNT,
                         multisetAgg(
@@ -74,6 +57,24 @@ public class PostQueryRepository {
                 .groupBy(POST.POST_ID)
                 .orderBy(POST.POST_ID.desc())
                 .limit(pageable.getPageSize());
+    }
+
+    private Condition isPopularPost() {
+        return POST.RECOMMENDATION_COUNT.ge(60);
+    }
+
+    private List<Post> getLatestPost(Pageable pageable, int total) {
+        Long offset = getOffset(pageable, total);
+        return getSelectQueryOnLatestPosts(pageable, isPostIdLeThanCursor(offset))
+                .fetchInto(Post.class);
+    }
+
+    private long getOffset(Pageable pageable, int total) {
+        return total - pageable.getOffset();
+    }
+
+    private Condition isPostIdLeThanCursor(Long offset) {
+        return POST.POST_ID.le(offset);
     }
 
     public Post findPostById(Long postNo) {
@@ -91,6 +92,7 @@ public class PostQueryRepository {
                 .on(POST.POST_ID.eq(POST_FILE.POST_ID))
                 .where(POST.POST_ID.eq(postNo))
                 .groupBy(POST.POST_ID)
-                .fetchOneInto(Post.class);
+                .fetchOptionalInto(Post.class)
+                .orElseThrow(NoSuchPostException::new);
     }
 }
