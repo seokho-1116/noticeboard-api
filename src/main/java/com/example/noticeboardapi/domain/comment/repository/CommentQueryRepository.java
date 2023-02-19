@@ -23,31 +23,33 @@ import static org.jooq.impl.DSL.field;
 public class CommentQueryRepository {
 
     private final DSLContext dslContext;
+    private final static int ROOT_COMMENT_ID = 0;
 
     public Page<Comment> find20Comments(Long postNo, Pageable pageable) {
-        org.jooq.generated.test.tables.Comment c1 = new org.jooq.generated.test.tables.Comment("c1");
-        org.jooq.generated.test.tables.Comment c2 = new org.jooq.generated.test.tables.Comment("c2");
-        TreePath tp1 = new TreePath("tp1");
-        TreePath tp2 = new TreePath("tp2");
-        TreePath breadcrumb = new TreePath("breadcrumb");
+        org.jooq.generated.test.tables.Comment parentComment = new org.jooq.generated.test.tables.Comment("parentComment");
+        org.jooq.generated.test.tables.Comment childComment = new org.jooq.generated.test.tables.Comment("childComment");
+        TreePath parentPath = new TreePath("parentPath");
+        TreePath childPath = new TreePath("childPath");
+        TreePath breadcrumbPath = new TreePath("breadcrumbPath");
 
         List<Comment> comments = dslContext
                 .select(
-                        c2.asterisk(),
-                        tp2.ANCESTOR,
-                        groupConcat(breadcrumb.ANCESTOR).orderBy(breadcrumb.DEPTH.desc()).as("breadcrumbs")
+                        childComment.asterisk(),
+                        childPath.ANCESTOR,
+                        groupConcat(breadcrumbPath.ANCESTOR).orderBy(breadcrumbPath.DEPTH.desc()).as("breadcrumbs")
                 )
-                .from(c1)
-                .join(tp1).on(tp1.ANCESTOR.eq(c1.COMMENT_ID).and(tp1.POST_ID.eq(postNo)).and(c1.POST_ID.eq(postNo)))
-                .join(c2).on(tp1.DESCENDANT.eq(c2.COMMENT_ID).and(c2.POST_ID.eq(postNo)))
-                .leftOuterJoin(tp2).on(tp2.DESCENDANT.eq(c2.COMMENT_ID).and(tp2.DEPTH.eq(1)))
-                .join(breadcrumb).on(tp1.DESCENDANT.eq(breadcrumb.DESCENDANT))
-                .where(c1.COMMENT_ID.eq(ULong.valueOf(0L)))
-                .groupBy(tp1.DESCENDANT)
-                .orderBy(DSL.field("breadcrumbs"))
+                .from(parentComment)
+                .join(parentPath).on(parentPath.ANCESTOR.eq(parentComment.COMMENT_ID).and(parentPath.POST_ID.eq(postNo)).and(parentComment.POST_ID.eq(postNo)))
+                .join(childComment).on(parentPath.DESCENDANT.eq(childComment.COMMENT_ID).and(childComment.POST_ID.eq(postNo)))
+                .leftOuterJoin(childPath).on(childPath.DESCENDANT.eq(childComment.COMMENT_ID).and(childPath.DEPTH.eq(1)))
+                .join(breadcrumbPath).on(parentPath.DESCENDANT.eq(breadcrumbPath.DESCENDANT))
+                .where(parentComment.COMMENT_ID.eq(ULong.valueOf(ROOT_COMMENT_ID)))
+                .groupBy(parentPath.DESCENDANT)
+                .orderBy(breadcrumbPath.ANCESTOR)
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset() + 1)
                 .fetchInto(Comment.class);
+
 
         int count = dslContext.fetchCount(COMMENT, COMMENT.POST_ID.eq(postNo));
 
