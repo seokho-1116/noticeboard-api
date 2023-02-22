@@ -52,11 +52,5 @@ public class PostController {
         postCommandService.addRecommendationCount(postNo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    @PutMapping("/posts/{postNo}/viewCount")
-    public ResponseEntity<?> viewCountAdd(@PathVariable Long postNo) {
-        postCommandService.addViewCount(postNo);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 }
 
