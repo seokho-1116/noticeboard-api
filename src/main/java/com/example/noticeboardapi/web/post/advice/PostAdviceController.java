@@ -21,9 +21,10 @@ public class PostAdviceController {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoSuchPostException.class)
-    public ResponseEntity<String> noSuchPostExceptionHandle(NoSuchPostException e, HttpServletRequest request) throws IOException {
+    public ResponseEntity<ErrorResponse> noSuchPostExceptionHandle(NoSuchPostException e,
+                                                                   HttpServletRequest request) {
         writeLog(e, request);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return getResponseEntity(e, HttpStatus.NOT_FOUND, "please enter a different post number");
     }
 
     private void writeLog(Exception e, HttpServletRequest request) {
@@ -31,17 +32,27 @@ public class PostAdviceController {
         log.error("HANDLE {}", formattedLog);
     }
 
+    private ResponseEntity<ErrorResponse> getResponseEntity(Exception e, HttpStatus status, String description) {
+        return new ResponseEntity<>(ErrorResponse.createErrorResponse(status.toString(), e.getMessage(), description),
+                status
+        );
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> methodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) throws IOException {
+    public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException e,
+                                                                  HttpServletRequest request) {
         writeLog(e, request);
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return getResponseEntity(e, HttpStatus.BAD_REQUEST,
+                "Check the validation conditions for the entered values"
+        );
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestPartException.class)
-    public ResponseEntity<String> missingServletRequestPartException(MissingServletRequestPartException e, HttpServletRequest request) throws IOException {
+    public ResponseEntity<ErrorResponse> missingServletRequestPartException(MissingServletRequestPartException e,
+                                                                            HttpServletRequest request) {
         writeLog(e, request);
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return getResponseEntity(e, HttpStatus.BAD_REQUEST, "Required request part is incorrect or empty.");
     }
 }
