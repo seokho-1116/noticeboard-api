@@ -29,7 +29,7 @@ public class CommentCommandRepository {
 
     private CommentRecord getCommentRecord(Long postNo, Long commentNo) {
         CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo)
-                .and(COMMENT.COMMENT_ID.eq(commentNo)));
+                .and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
 
         if (commentRecord == null) {
             throw new NoSuchCommentException();

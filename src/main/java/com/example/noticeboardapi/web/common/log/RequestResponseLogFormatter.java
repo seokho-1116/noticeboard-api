@@ -49,7 +49,7 @@ public class RequestResponseLogFormatter {
     }
 
     public static String formattingWithRequestBody(HttpServletRequest request) throws IOException {
-        return String.format("%s[request body: %s]", formatting(request),getRequestBody(request));
+        return String.format("%s[request body: %s]", formatting(request), getRequestBody(request));
     }
 
 

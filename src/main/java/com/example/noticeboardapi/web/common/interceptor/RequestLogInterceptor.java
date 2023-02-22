@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class RequestLogInterceptor implements HandlerInterceptor {
 
-    public static final String LOG_ID = "logId";
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String formattedLog = RequestResponseLogFormatter.formatting(request);

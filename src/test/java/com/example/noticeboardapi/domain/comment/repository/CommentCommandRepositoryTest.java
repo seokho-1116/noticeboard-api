@@ -31,13 +31,13 @@ public class CommentCommandRepositoryTest {
     void commentDeleteTest(Long commentNo) {
         Long postNo = 1L;
         CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo)
-                .and(COMMENT.COMMENT_ID.eq(commentNo)));
+                .and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
 
         commentRecord.setText("삭제된 댓글입니다.");
         commentRecord.store();
 
         Comment comment = dslContext.selectFrom(COMMENT)
-                .where(COMMENT.COMMENT_ID.eq(commentNo))
+                .where(COMMENT.COMMENT_ID.eq(ULong.valueOf((commentNo))))
                 .fetchOneInto(Comment.class);
 
         assertThat(comment.getText()).isEqualTo("삭제된 댓글입니다.");
@@ -50,7 +50,7 @@ public class CommentCommandRepositoryTest {
 
         CommentRecord commentRecord = dslContext
                 .insertInto(COMMENT, COMMENT.COMMENT_ID, COMMENT.POST_ID, COMMENT.AUTHOR, COMMENT.TEXT, COMMENT.CREATED_TIME)
-                .values(1003L, 1L, "seokho", "hi", LocalDateTime.now())
+                .values(ULong.valueOf(1003L), 1L, "seokho", "hi", LocalDateTime.now())
                 .returning(COMMENT.COMMENT_ID)
                 .fetchOne();
         Long commentNo = (Long) commentRecord.getValue("comment_id");
@@ -58,14 +58,14 @@ public class CommentCommandRepositoryTest {
         dslContext.insertInto(TREE_PATH)
                 .select(DSL.select(DSL.val(postNo), TREE_PATH.ANCESTOR, DSL.val(commentNo), TREE_PATH.DEPTH.plus(1))
                         .from(TREE_PATH)
-                        .where(TREE_PATH.DESCENDANT.eq(parentCommentNo)
-)                        .unionAll(DSL.select(DSL.val(postNo), DSL.val(commentNo), DSL.val(commentNo), DSL.val(0))))
+                        .where(TREE_PATH.DESCENDANT.eq(ULong.valueOf((parentCommentNo)))
+)                        .unionAll(DSL.select(DSL.val(postNo), DSL.val(ULong.valueOf(commentNo)), DSL.val(commentNo), DSL.val(0))))
                 .execute();
 
         List<TreePath> treePaths = dslContext
                 .select(TREE_PATH.asterisk())
                 .from(TREE_PATH)
-                .where(TREE_PATH.DESCENDANT.eq(commentNo))
+                .where(TREE_PATH.DESCENDANT.eq(ULong.valueOf(commentNo)))
                 .orderBy(TREE_PATH.DEPTH.desc())
                 .fetchInto(TreePath.class);
 
@@ -80,7 +80,7 @@ public class CommentCommandRepositoryTest {
         Comment before = getComment(postNo, commentNo);
 
         CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo)
-                .and(COMMENT.COMMENT_ID.eq(commentNo)));
+                .and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
 
         commentRecord.setRecommendationCount(commentRecord.getRecommendationCount() + 1);
         commentRecord.store();
@@ -92,7 +92,7 @@ public class CommentCommandRepositoryTest {
 
     private Comment getComment(Long postNo, Long commentNo) {
         return dslContext.selectFrom(COMMENT)
-                .where(COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(commentNo)))
+                .where(COMMENT.POST_ID.eq(postNo).and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))))
                 .fetchOneInto(Comment.class);
     }
 }
