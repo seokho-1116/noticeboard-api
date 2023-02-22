@@ -23,7 +23,7 @@ import static org.jooq.impl.DSL.field;
 public class CommentQueryRepository {
 
     private final DSLContext dslContext;
-    private final static int ROOT_COMMENT_ID = 0;
+    private final static long ROOT_COMMENT_ID = 0;
 
     public Page<Comment> find20Comments(Long postNo, Pageable pageable) {
         org.jooq.generated.test.tables.Comment parentComment = new org.jooq.generated.test.tables.Comment("parentComment");
@@ -43,7 +43,7 @@ public class CommentQueryRepository {
                 .join(childComment).on(parentPath.DESCENDANT.eq(childComment.COMMENT_ID).and(childComment.POST_ID.eq(postNo)))
                 .leftOuterJoin(childPath).on(childPath.DESCENDANT.eq(childComment.COMMENT_ID).and(childPath.DEPTH.eq(1)))
                 .join(breadcrumbPath).on(parentPath.DESCENDANT.eq(breadcrumbPath.DESCENDANT))
-                .where(parentComment.COMMENT_ID.eq(ULong.valueOf(ROOT_COMMENT_ID)))
+                .where(parentComment.COMMENT_ID.eq(ROOT_COMMENT_ID))
                 .groupBy(parentPath.DESCENDANT)
                 .orderBy(breadcrumbPath.ANCESTOR)
                 .limit(pageable.getPageSize())
@@ -69,7 +69,7 @@ public class CommentQueryRepository {
                         .from(tp1)
                         .leftOuterJoin(tp2).on(tp2.DESCENDANT.eq(tp1.DESCENDANT).and(tp2.DEPTH.eq(1)))
                         .join(breadcrumb).on(tp1.DESCENDANT.eq(breadcrumb.DESCENDANT))
-                        .where(tp1.ANCESTOR.eq(ULong.valueOf((0L))))
+                        .where(tp1.ANCESTOR.eq(0L))
                         .groupBy(tp1.DESCENDANT)
                         .orderBy(field("breadcrumbs")).asTable("r"))
                 .where("r.descendant = " + commentNo.toString())
