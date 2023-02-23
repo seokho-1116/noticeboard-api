@@ -53,19 +53,19 @@ public class CommentCommandRepositoryTest {
                 .values(ULong.valueOf(1003L), 1L, "seokho", "hi", LocalDateTime.now())
                 .returning(COMMENT.COMMENT_ID)
                 .fetchOne();
-        Long commentNo = (Long) commentRecord.getValue("comment_id");
+        ULong commentNo = (ULong) commentRecord.getValue("comment_id");
 
         dslContext.insertInto(TREE_PATH)
                 .select(DSL.select(DSL.val(postNo), TREE_PATH.ANCESTOR, DSL.val(commentNo), TREE_PATH.DEPTH.plus(1))
                         .from(TREE_PATH)
                         .where(TREE_PATH.DESCENDANT.eq(ULong.valueOf((parentCommentNo)))
-)                        .unionAll(DSL.select(DSL.val(postNo), DSL.val(ULong.valueOf(commentNo)), DSL.val(commentNo), DSL.val(0))))
+)                        .unionAll(DSL.select(DSL.val(postNo), DSL.val(commentNo), DSL.val(commentNo), DSL.val(0))))
                 .execute();
 
         List<TreePath> treePaths = dslContext
                 .select(TREE_PATH.asterisk())
                 .from(TREE_PATH)
-                .where(TREE_PATH.DESCENDANT.eq(ULong.valueOf(commentNo)))
+                .where(TREE_PATH.DESCENDANT.eq(commentNo))
                 .orderBy(TREE_PATH.DEPTH.desc())
                 .fetchInto(TreePath.class);
 
