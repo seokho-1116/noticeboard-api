@@ -4,6 +4,7 @@ import com.example.noticeboardapi.domain.common.file.FileStore;
 import com.example.noticeboardapi.domain.post.entity.PostFile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +15,9 @@ import static org.assertj.core.api.Assertions.*;
 
 class FileStoreTest {
 
-    private FileStore fileStore = new FileStore("C:/Users/seokh/IdeaProjects/noticeboard-api/src/test/resources");
+    @Value("${file.dir}")
+    private String fileDir;
+    private FileStore fileStore = new FileStore(fileDir);
 
     @Test
     @DisplayName("파일 저장을 테스트")
