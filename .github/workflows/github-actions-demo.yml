@@ -22,6 +22,15 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build
+      
+    - name: Add Github Actions IP to Security group
+      run: |
+        aws ec2 authorize-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        aws rds authorize-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 3306 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ap-northeast-1
 
     - name: Run tests
       run: ./gradlew test
@@ -33,6 +42,15 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y awscli
+        
+    - name: Get Github action IP
+      id: ip
+      uses: haythem/public-ip@v1.2
+      
+    - name: Setting environment variables..
+      run: |
+        echo "AWS_DEFAULT_REGION=ap-southeast-1" >> $GITHUB_ENV
+        echo "AWS_SG_NAME=default" >> $GITHUB_ENV
 
     - name: Upload JAR to S3
       uses: jakejarvis/s3-sync-action@master
@@ -58,3 +76,12 @@ jobs:
         curl http://${{ secrets.EC2_INSTANCE_IP }}:8080/health
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    
+    - name: Remove Github Actions IP from security group
+      run: |
+        aws ec2 revoke-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        aws rds revoke-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 3306 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
