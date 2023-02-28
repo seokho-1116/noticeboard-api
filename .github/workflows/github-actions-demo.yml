@@ -12,11 +12,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Setup JDK
-      uses: actions/setup-java@v2
+      
+    - name: set up JDK 11
+      uses: actions/setup-java@v3
       with:
-        java-version: '11'
+           java-version: '11'
+           distribution: 'corretto'
+           cache: gradle
 
     - name: Build with Gradle
       run: ./gradlew build
@@ -37,6 +39,9 @@ jobs:
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ap-northeast-1
         SOURCE_DIR: ./
         DEST_DIR: /jar/
