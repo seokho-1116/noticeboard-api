@@ -33,7 +33,7 @@ jobs:
         sudo apt-get install -y awscli
 
     - name: Upload JAR to S3
-      uses: jakejarvis/s3-sync-action@v1.4.1
+      uses: jakejarvis/s3-sync-action@master
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
