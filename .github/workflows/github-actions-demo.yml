@@ -19,10 +19,6 @@ jobs:
            java-version: '11'
            distribution: 'corretto'
            cache: gradle
-
-    - name: Build with Gradle
-      run: ./gradlew build
-      
     - name: Add Github Actions IP to Security group
       run: |
         aws ec2 authorize-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
@@ -32,6 +28,9 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: ap-northeast-1
 
+    - name: Build with Gradle
+      run: ./gradlew build
+    
     - name: Run tests
       run: ./gradlew test
 
