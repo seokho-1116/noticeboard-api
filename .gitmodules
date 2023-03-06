@@ -1,0 +1,6 @@
+[submodule "src/test/resources/test-config-files"]
+	path = src/test/resources/test-config-files
+	url = https://github.com/seokho-1116/test-config-files.git
+[submodule "src/main/resources/main-config-files"]
+	path = src/main/resources/main-config-files
+	url = https://github.com/seokho-1116/main-config-files.git
