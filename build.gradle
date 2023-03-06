@@ -1,0 +1,83 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.7'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'nu.studer.jooq' version '7.2'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.jooq:jooq:3.15.9'
+    implementation 'org.springframework.boot:spring-boot-starter-jooq'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.mapstruct:mapstruct:1.5.2.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    jooqGenerator ('org.mariadb.jdbc:mariadb-java-client')
+    jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
+
+    compileOnly 'org.projectlombok:lombok'
+
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    jooqGenerator('org.mariadb.jdbc:mariadb-java-client')
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+jooq {
+    configurations {
+        version = '3.15.9'
+        main {
+            generationTool {
+                logging = org.jooq.meta.jaxb.Logging.WARN
+                jdbc {
+                    driver = System.getProperty('jooq.codegen.jdbc.driver')
+                    url = System.getProperty('jooq.codegen.jdbc.url')
+                    user = System.getProperty('jooq.codegen.jdbc.user')
+                    password = System.getProperty('jooq.codegen.jdbc.password')
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.mariadb.MariaDBDatabase'
+                        includes = '.*'
+                        excludes = ''
+                    }
+                    generate {
+                        javaTimeTypes = true    // java.time.*
+
+                        deprecated = false
+                        records = true
+                        immutablePojos = true
+                        fluentSetters = true
+                    }
+                    strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+                }
+            }
+        }
+    }
+}
