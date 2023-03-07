@@ -34,10 +34,10 @@ jobs:
         AWS_REGION: ${{ secrets.AWS_REGION }}
 
     - name: Build with Gradle
-      run: ./gradlew build
-    
+      run: ./gradlew build -Djooq.codegen.jdbc.driver=${{ secretes.JDBC_DRIVER }} -Djooq.codegen.jdbc.url=${{ secretes.JDBC_URL }} -Djooq.codegen.jdbc.user=${{ secretes.JDBC_USER }} -Djooq.codegen.jdbc.password=${{ secretes.JDBC_PASSWORD }}
+
     - name: Run tests
-      run: ./gradlew test
+      run: ./gradlew test -Djooq.codegen.jdbc.driver=${{ secretes.JDBC_DRIVER }} -Djooq.codegen.jdbc.url=${{ secretes.JDBC_URL }} -Djooq.codegen.jdbc.user=${{ secretes.JDBC_USER }} -Djooq.codegen.jdbc.password=${{ secretes.JDBC_PASSWORD }}
 
     - name: Create JAR artifact
       run: mv build/libs/*.jar app.jar
