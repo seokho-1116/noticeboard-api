@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.mapstruct:mapstruct:1.5.2.Final'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    implementation 'org.mariadb.jdbc:mariadb-java-client'
 
     jooqGenerator ('org.mariadb.jdbc:mariadb-java-client')
     jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
