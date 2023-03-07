@@ -48,6 +48,22 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.register('copyTestPrivate', Copy) {
+    copy {
+        from './test-config-files'
+        include "*.yml"
+        into 'src/test/resources'
+    }
+}
+
+tasks.register('copyMainPrivate', Copy) {
+    copy {
+        from './main-config-files'
+        include "*.yml"
+        into 'src/main/resources'
+    }
+}
+
 jooq {
     configurations {
         version = '3.15.9'
