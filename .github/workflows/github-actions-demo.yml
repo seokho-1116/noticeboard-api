@@ -13,6 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
+    - name: Add SSH private keys for submodule repositories
+      uses: webfactory/ssh-agent@0.7.0
+      with:
+        ssh-private-key: |
+          ${{ secrets.SSH_SUBMODULE_PRIVATE_KEY }}
+    - run: git submodule update --init --recursive --remote
+    
     - name: setup config file
       run: |
         ls /home/runner/work/noticeboard-api/noticeboard-api/main-config-files/
