@@ -13,6 +13,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
+    - name: Checkout submodules using a PAT
+      run: |
+         git config --file .gitmodules --get-regexp url | while read url; do
+         git config --file=.gitmodules $(echo "$url" | sed -E "s/git@github.com:|https:\/\/github.com\//https:\/\/${{ secrets.CI_PAT }}:${{ secrets.CI_PAT }}@github.com\//")
+         done
+         git submodule sync
+         git submodule update --init --recursive
+    
+    - name: setup config file
+      run: |
+        mkdir -p /home/runner/work/noticeboard-api/noticeboard-api/PostFiles/
+        mkdir -p /home/runner/work/noticeboard-api/noticeboard-api/src/main/resources/ && cp /home/runner/work/noticeboard-api/noticeboard-api/main-config-files/application.yml "$_"
+        cp /home/runner/work/noticeboard-api/noticeboard-api/test-config-files/application-test.yml /home/runner/work/noticeboard-api/noticeboard-api/src/test/resources/application-test.yml
+      
     - name: set up JDK 11
       uses: actions/setup-java@v3
       with:
@@ -32,7 +46,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
-
+        
     - name: Build with Gradle
       run: ./gradlew build -Djooq.codegen.jdbc.driver=${{ secrets.JDBC_DRIVER }} -Djooq.codegen.jdbc.url=${{ secrets.JDBC_URL }} -Djooq.codegen.jdbc.user=${{ secrets.JDBC_USER }} -Djooq.codegen.jdbc.password=${{ secrets.JDBC_PASSWORD }}
 
@@ -40,7 +54,9 @@ jobs:
       run: ./gradlew test -Djooq.codegen.jdbc.driver=${{ secrets.JDBC_DRIVER }} -Djooq.codegen.jdbc.url=${{ secrets.JDBC_URL }} -Djooq.codegen.jdbc.user=${{ secrets.JDBC_USER }} -Djooq.codegen.jdbc.password=${{ secrets.JDBC_PASSWORD }}
 
     - name: Create JAR artifact
-      run: mv build/libs/*.jar app.jar
+      run: |
+        ls build/libs/
+        mv build/libs/*.jar app.jar
 
     - name: Install AWS CLI
       run: |
@@ -71,6 +87,13 @@ jobs:
         curl http://${{ secrets.EC2_INSTANCE_IP }}:8080/health
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+    - name: check datasource
+      if: always()
+      run: |
+        cat ./src/main/resources/application.yml
+        cat ./src/test/resources/application-test.yml
+
     
     - name: Remove Github Actions IP from security group
       if: always()
