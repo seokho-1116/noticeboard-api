@@ -7,6 +7,7 @@ import com.example.noticeboardapi.domain.comment.entity.Comment;
 import com.example.noticeboardapi.domain.comment.repository.CommentCommandRepository;
 import com.example.noticeboardapi.domain.comment.repository.CommentJpaRepository;
 import com.example.noticeboardapi.domain.comment.service.dto.CommentMapper;
+import com.example.noticeboardapi.web.comment.CommentUpdateFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -50,5 +51,9 @@ public class CommentCommandService {
 
     public void addRecommendationCount(Long postNo, Long commentNo) {
         commentCommandRepository.updateRecommendationCount(postNo, commentNo);
+    }
+
+    public void updateComment(Long postNo, Long commentNo, CommentUpdateFormat commentUpdateFormat) {
+        commentCommandRepository.updateComment(postNo, commentNo, commentUpdateFormat.getText());
     }
 }

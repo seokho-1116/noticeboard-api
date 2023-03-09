@@ -45,6 +45,25 @@ public class CommentCommandRepositoryTest {
 
     @ParameterizedTest
     @ValueSource(longs = {1L})
+    void commentUpdateTest(Long commentNo) {
+        Long postNo = 1L;
+
+        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo)
+                .and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
+
+        String updateString = "수정된 댓글입니다.";
+        commentRecord.setText(updateString);
+        commentRecord.store();
+
+        Comment comment = dslContext.selectFrom(COMMENT)
+                .where(COMMENT.COMMENT_ID.eq(ULong.valueOf((commentNo))))
+                .fetchOneInto(Comment.class);
+
+        assertThat(comment.getText()).isEqualTo(updateString);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {1L})
     void replySaveTest(Long postNo) {
         long parentCommentNo = 20L;
 

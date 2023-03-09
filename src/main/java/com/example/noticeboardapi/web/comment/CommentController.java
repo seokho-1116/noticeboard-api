@@ -36,6 +36,14 @@ public class CommentController {
                 .body(commentReadService.find20CommentsContainingSpecificComment(postNo, commentDto));
     }
 
+    @PutMapping("/posts/{postNo}/comments/{commentNo}")
+    public ResponseEntity<Void> commentUpdate(@PathVariable Long postNo,
+                                              @PathVariable Long commentNo,
+                                              @RequestBody @Validated CommentUpdateFormat commentUpdateFormat) {
+        commentCommandService.updateComment(postNo, commentNo, commentUpdateFormat);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/posts/{postNo}/comments")
     public ResponseEntity<?> commentList(@PathVariable Long postNo, @PageableDefault Pageable pageable) {
         return ResponseEntity.ok(commentReadService.find20Comments(postNo, pageable));

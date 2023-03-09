@@ -43,4 +43,12 @@ public class CommentCommandRepository {
         commentRecord.setRecommendationCount(commentRecord.getRecommendationCount() + 1);
         commentRecord.store();
     }
+
+    public void updateComment(Long postNo, Long commentNo, String text) {
+        CommentRecord commentRecord = dslContext.fetchOne(COMMENT, COMMENT.POST_ID.eq(postNo)
+                .and(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentNo))));
+
+        commentRecord.setText(text);
+        commentRecord.store();
+    }
 }
