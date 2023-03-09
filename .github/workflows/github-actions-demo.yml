@@ -13,12 +13,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Add SSH private keys for submodule repositories
-      uses: webfactory/ssh-agent@v0.7.0
-      with:
-        ssh-private-key: |
-          ${{ secrets.SSH_PRIVATE_KEY }}
-    - run: git submodule update --init --recursive
+    - name: Clone Submodule
+      run: |
+        mkdir -p $HOME/.ssh
+        echo '${{ secrets.SUBMODULE_REPO_DEPLOY_KEY }}' > $HOME/.ssh/ssh.key
+        chmod 600 $HOME/.ssh/ssh.key
+        export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/ssh.key"
+        git submodule set-url git@github.com:seokho-1116/main-config-files.git
+        git submodule update --init --recursive
+        git submodule set-url git@github.com:seokho-1116/main-config-files.git
+        git submodule set-url git@github.com:seokho-1116/test-config-files.git
+        git submodule update --init --recursive
+        git submodule set-url git@github.com:seokho-1116/test-config-files.git
+        unset GIT_SSH_COMMAND
     
     - name: setup config file
       run: |
