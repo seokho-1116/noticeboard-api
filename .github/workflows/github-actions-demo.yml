@@ -13,6 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
+    - name: setup config file
+      run: |
+        cp /home/runner/work/noticeboard-api/noticeboard-api/main-config-files/application.yml /home/runner/work/noticeboard-api/noticeboard-api/src/main/resources/application.yml
+        cp /home/runner/work/noticeboard-api/noticeboard-api/test-config-files/application-test.yml /home/runner/work/noticeboard-api/noticeboard-api/src/test/resources/application-test.yml
+      
     - name: set up JDK 11
       uses: actions/setup-java@v3
       with:
