@@ -13,19 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Clone Submodule
+    - name: Checkout submodules using a PAT
       run: |
-        mkdir -p $HOME/.ssh
-        echo '${{ secrets.SUBMODULE_REPO_DEPLOY_KEY }}' > $HOME/.ssh/ssh.key
-        chmod 600 $HOME/.ssh/ssh.key
-        export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/ssh.key"
-        git submodule set-url git@github.com:seokho-1116/main-config-files.git
-        git submodule update --init --recursive
-        git submodule set-url git@github.com:seokho-1116/main-config-files.git
-        git submodule set-url git@github.com:seokho-1116/test-config-files.git
-        git submodule update --init --recursive
-        git submodule set-url git@github.com:seokho-1116/test-config-files.git
-        unset GIT_SSH_COMMAND
+         git config --file .gitmodules --get-regexp url | while read url; do
+         git config --file=.gitmodules $(echo "$url" | sed -E "s/git@github.com:|https:\/\/github.com\//https:\/\/${{ secrets.CI_PAT }}:${{ secrets.CI_PAT }}@github.com\//")
+         done
+         git submodule sync
+         git submodule update --init --recursive
     
     - name: setup config file
       run: |
