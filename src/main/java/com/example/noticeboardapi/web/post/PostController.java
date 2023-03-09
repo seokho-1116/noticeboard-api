@@ -1,8 +1,13 @@
 package com.example.noticeboardapi.web.post;
 
+import com.example.noticeboardapi.domain.post.entity.Post;
 import com.example.noticeboardapi.domain.post.service.PostReadService;
 import com.example.noticeboardapi.domain.post.service.PostCommandService;
+import com.example.noticeboardapi.domain.post.service.dto.PostDetailDto;
+import com.example.noticeboardapi.domain.post.service.dto.PostThumbnailDto;
+import io.r2dbc.spi.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -24,31 +29,39 @@ public class PostController {
     private final PostReadService postReadService;
 
     @PostMapping(value = "/posts", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> postSave(@RequestPart @Validated PostCreateFormat postCreateFormat,
+    public ResponseEntity<Void> postSave(@RequestPart @Validated PostCreateFormat postCreateFormat,
                                       @RequestPart(name = "file", required = false) List<MultipartFile> multipartFiles) {
         Long postNumber = postCommandService.savePost(postCreateFormat, multipartFiles);
         return ResponseEntity.created(URI.create("/posts/"+postNumber)).build();
     }
 
+    @PutMapping(value = "/posts/{postNo}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Void> postUpdate(@PathVariable Long postNo,
+                                        @RequestPart @Validated PostUpdateFormat postUpdateFormat,
+                                        @RequestPart(name = "file", required = false) List<MultipartFile> multipartFiles) {
+        postCommandService.updatePost(postNo, postUpdateFormat, multipartFiles);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/posts")
-    public ResponseEntity<?> postList(@PageableDefault Pageable pageable) {
+    public ResponseEntity<Page<PostThumbnailDto>> postList(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(postReadService.find10Posts(pageable));
     }
 
     @GetMapping("/posts/{postNo}")
-    public ResponseEntity<?> postDetails(@PathVariable Long postNo) {
+    public ResponseEntity<PostDetailDto> postDetails(@PathVariable Long postNo) {
         postCommandService.addViewCount(postNo);
         return ResponseEntity.ok(postReadService.findPost(postNo));
     }
 
     @DeleteMapping("/posts/{postNo}")
-    public ResponseEntity<?> postDelete(@PathVariable Long postNo) {
+    public ResponseEntity<Void> postDelete(@PathVariable Long postNo) {
         postCommandService.deletePost(postNo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/posts/{postNo}/recommendation")
-    public ResponseEntity<?> recommendationCountAdd(@PathVariable Long postNo) {
+    public ResponseEntity<Void> recommendationCountAdd(@PathVariable Long postNo) {
         postCommandService.addRecommendationCount(postNo);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,4 +1,4 @@
-package com.example.noticeboardapi.web.post.advice;
+package com.example.noticeboardapi.web.common;
 
 import lombok.Getter;
 

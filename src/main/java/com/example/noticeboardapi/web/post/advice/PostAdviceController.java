@@ -1,6 +1,7 @@
 package com.example.noticeboardapi.web.post.advice;
 
 import com.example.noticeboardapi.domain.post.exception.NoSuchPostException;
+import com.example.noticeboardapi.web.common.ErrorResponse;
 import com.example.noticeboardapi.web.common.log.RequestResponseLogFormatter;
 import com.example.noticeboardapi.web.post.PostController;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @RestControllerAdvice(assignableTypes = PostController.class)
 @Slf4j
