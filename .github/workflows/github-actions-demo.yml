@@ -18,7 +18,7 @@ jobs:
       with:
         ssh-private-key: |
           ${{ secrets.SSH_PRIVATE_KEY }}
-    - run: git submodule update --init --recursive --remote
+    - run: git submodule update --init --recursive
     
     - name: setup config file
       run: |
