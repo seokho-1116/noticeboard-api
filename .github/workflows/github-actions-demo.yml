@@ -23,12 +23,8 @@ jobs:
     
     - name: setup config file
       run: |
-        ls /home/runner/work/noticeboard-api/noticeboard-api/main-config-files/
-        ls /home/runner/work/noticeboard-api/noticeboard-api/test-config-files/
-        ls /home/runner/work/noticeboard-api/noticeboard-api/src/main/
-        ls /home/runner/work/noticeboard-api/noticeboard-api/src/test/
-        cp /home/runner/work/noticeboard-api/noticeboard-api/main-config-files/application.yml /home/runner/work/noticeboard-api/noticeboard-api/src/main/resources/
-        cp /home/runner/work/noticeboard-api/noticeboard-api/test-config-files/application-test.yml /home/runner/work/noticeboard-api/noticeboard-api/src/test/resources/
+        mkdir -p /home/runner/work/noticeboard-api/noticeboard-api/src/main/resources/ && cp /home/runner/work/noticeboard-api/noticeboard-api/main-config-files/application.yml "$_"
+        cp /home/runner/work/noticeboard-api/noticeboard-api/test-config-files/application-test.yml /home/runner/work/noticeboard-api/noticeboard-api/src/test/resources/application-test.yml
       
     - name: set up JDK 11
       uses: actions/setup-java@v3
