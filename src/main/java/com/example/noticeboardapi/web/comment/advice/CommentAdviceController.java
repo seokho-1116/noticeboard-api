@@ -3,7 +3,7 @@ package com.example.noticeboardapi.web.comment.advice;
 import com.example.noticeboardapi.domain.comment.exception.NoSuchCommentException;
 import com.example.noticeboardapi.web.comment.CommentController;
 import com.example.noticeboardapi.web.common.log.RequestResponseLogFormatter;
-import com.example.noticeboardapi.web.post.advice.ErrorResponse;
+import com.example.noticeboardapi.web.common.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
