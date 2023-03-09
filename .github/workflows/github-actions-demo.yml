@@ -54,7 +54,9 @@ jobs:
       run: ./gradlew test -Djooq.codegen.jdbc.driver=${{ secrets.JDBC_DRIVER }} -Djooq.codegen.jdbc.url=${{ secrets.JDBC_URL }} -Djooq.codegen.jdbc.user=${{ secrets.JDBC_USER }} -Djooq.codegen.jdbc.password=${{ secrets.JDBC_PASSWORD }}
 
     - name: Create JAR artifact
-      run: mv build/libs/*.jar app.jar
+      run: |
+        ls build/libs/
+        mv build/libs/*.jar app.jar
 
     - name: Install AWS CLI
       run: |
