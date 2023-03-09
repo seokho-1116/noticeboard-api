@@ -23,6 +23,7 @@ jobs:
     
     - name: setup config file
       run: |
+        mkdir -p /home/runner/work/noticeboard-api/noticeboard-api/PostFiles/
         mkdir -p /home/runner/work/noticeboard-api/noticeboard-api/src/main/resources/ && cp /home/runner/work/noticeboard-api/noticeboard-api/main-config-files/application.yml "$_"
         cp /home/runner/work/noticeboard-api/noticeboard-api/test-config-files/application-test.yml /home/runner/work/noticeboard-api/noticeboard-api/src/test/resources/application-test.yml
       
