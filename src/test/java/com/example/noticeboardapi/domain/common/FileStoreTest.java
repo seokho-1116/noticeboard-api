@@ -2,21 +2,26 @@ package com.example.noticeboardapi.domain.common;
 
 import com.example.noticeboardapi.domain.common.file.FileStore;
 import com.example.noticeboardapi.domain.post.entity.PostFile;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.web.multipart.MultipartFile;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 
 class FileStoreTest {
 
-    @Value("${file.dir}")
-    private String fileDir;
+    private String fileDir = System.getProperty("user.dir") + "/PostFiles/";
     private FileStore fileStore = new FileStore(fileDir);
 
     @Test
